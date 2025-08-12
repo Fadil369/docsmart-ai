@@ -3,6 +3,7 @@ import { Toaster } from '@/components/ui/sonner'
 import { DocumentUpload } from '@/components/DocumentUpload'
 import { DocumentCard } from '@/components/DocumentCard'
 import { Header } from '@/components/Header'
+import { LiveCollaboration } from '@/components/LiveCollaboration'
 import { useKV } from '@github/spark/hooks'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -52,6 +53,9 @@ function App() {
 
         <div className="space-y-8">
           <DocumentUpload onFilesUploaded={handleFilesUploaded} />
+
+          {/* Live Collaboration Section */}
+          <LiveCollaboration />
 
           {documents.length > 0 && (
             <motion.div
