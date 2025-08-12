@@ -1,533 +1,542 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-
 import { Label } from '@/components/ui/label'
-  name: string
+import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-  color: string
 import { motion } from 'framer-motion'
-    actions: string
 import { useKV } from '@github/spark/hooks'
+import { FileText, Target, Brain, Building, Table, Settings, Trash2, Plus } from '@phosphor-icons/react'
+import { toast } from 'sonner'
 
+interface AnalysisTemplate {
+  id: string
+  name: string
+  description: string
+  documentTypes: string[]
+  icon: any
+  color: string
+  prompts: {
+    summary: string
+    insights: string
+    actions: string
+    recommendations: string
+    customQuestions: string[]
+  }
+  features: {
     sentiment: boolean
     keyMetrics: boolean
+    translation: boolean
+    entities: boolean
+    compliance: boolean
   }
-    sections: 
+  outputFormat: {
+    sections: string[]
+    visualizations: string[]
   }
+}
 
-const defau
-    id: 'financ
-    descript
-    icon: Target,
-    prompts: {
-      insights: 'Ex
-      recommendations: 'Pro
-        'What are the main rev
-   
-      ]
-    features: {
-    sentiment: boolean
-      keyMetrics: tru
-    keyMetrics: boolean
-      sections: ['Execu
-  }
+interface AnalysisTemplatesProps {
+  documentType: string
+  onTemplateSelect: (template: AnalysisTemplate) => void
+  selectedTemplate: AnalysisTemplate | null
+}
+
+const defaultTemplates: AnalysisTemplate[] = [
   {
-    name: 'Legal Docum
-    documentTypes: ['pdf', '
-  }
- 
-
+    id: 'financial-report',
+    name: 'Financial Analysis',
+    description: 'Comprehensive financial document analysis with metrics and insights',
+    documentTypes: ['pdf', 'xlsx', 'csv'],
+    icon: Target,
+    color: 'text-green-400',
+    prompts: {
+      summary: 'Analyze this financial document focusing on key performance indicators, revenue trends, and financial health',
+      insights: 'Extract key financial insights including growth patterns, profitability metrics, and risk indicators',
+      actions: 'Identify critical financial action items and recommendations for stakeholders',
+      recommendations: 'Provide strategic financial recommendations based on the analysis',
       customQuestions: [
-        'Are there any unusual or risky clause
-   
+        'What are the main revenue drivers?',
+        'What are the key financial risks identified?',
+        'How does performance compare to industry benchmarks?'
+      ]
     },
+    features: {
+      sentiment: false,
+      keyMetrics: true,
       translation: true,
       entities: true,
       compliance: true
-    icon: Target,
-      visualizations: ['time
-    prompts: {
-    id: 'research-paper',
-    description: 'Academic and research document analysis with methodology focus',
-    icon: Brain,
-    prompts: {
-      insights: 'Extract
-      recommendations: 'Provide recommendatio
-        'What is the main research hypothesis?',
-        'What are the key findings and their signific
-      ]
-      ]
-      
-    features: {
     },
-      sections: ['Resea
-    }
-  {
-    name: 'Business Pr
-    },
-    color: 'text-or
-      summary: 'Analyze this business proposal focusing on objectives, strategy, feasibility, and expected outcomes
-      actions: 'Identify critical action items for pr
-     
-    
-  {
-    },
-      translation: true,
-      entities: true,
-      compliance: false
     outputFormat: {
-      visualizations: ['swo
+      sections: ['Executive Summary', 'Key Metrics', 'Trends Analysis', 'Recommendations'],
+      visualizations: ['charts', 'tables', 'trends']
+    }
   },
-    id: 'data-spreadsheet',
-    description: 'Comprehensive analysis for spreadsheets and data files',
-    icon: Table,
+  {
+    id: 'legal-document',
+    name: 'Legal Document Review',
+    description: 'Legal document analysis focusing on compliance and risk assessment',
+    documentTypes: ['pdf', 'docx'],
+    icon: FileText,
+    color: 'text-blue-400',
     prompts: {
+      summary: 'Analyze this legal document focusing on key terms, obligations, and potential risks',
+      insights: 'Extract critical legal insights including compliance requirements and risk factors',
+      actions: 'Identify required legal actions and compliance steps',
+      recommendations: 'Provide legal recommendations and risk mitigation strategies',
       customQuestions: [
-      recommendations: 'Provide recommendations for dat
-        'What are the main data patterns and trend
-        'What correlations exist between variab
+        'Are there any unusual or risky clauses?',
+        'What are the key obligations for each party?',
+        'What compliance requirements are specified?'
       ]
-    fea
     },
-      keyMetric
+    features: {
+      sentiment: false,
+      keyMetrics: false,
       translation: true,
-      sections: ['Data 
       entities: true,
-]
       compliance: true
-  onTe
-}
-export function AnalysisTemplates({ documentType, onTemplateSelect, selectedTemplate }: AnalysisTemplatesProps) {
-  const [showCustomDialog, setShowCustomDialog] = useState(false)
-  con
-  },
-   
-    id: 'research-paper',
-    onTemplateSelect(template)
-    description: 'Academic and research document analysis with methodology focus',
-  const handleCreateCustomTemplate 
-    icon: Brain,
-      description: '',
-    prompts: {
-      prompts: {
-        insights: '',
-        recommendations: '',
-      },
-        translation: fal
-        'What is the main research hypothesis?',
-        compliance: false
-      outputFormat: {
-        visualizations: []
-      ]
     },
-  const handleS
-      // Update existing
-        current.map(t =
-    } else {
-      const newTemplate
-    }
-    se
-  }
-  const handleDeleteTemplate = (templateId: string) => {
-    toast.success('Template deleted')
-    }
-    
-  {
-          <p className="text
-          </p>
-        
-          <DialogTrigger asChild>
-              <Set
-            </Button>
-          <Dia
-              <DialogTitle>
-              </DialogTitle>
-                Design a custom analysis template for your specific needs
-            </DialogHeader>
-            {editingTemp
-                template={editingTemplate}
-                onCancel={() => {
-                  setEditingTemplate(null)
-              />
-       
-    },
-      <Tabs val
-      translation: true,
-        </TabsList>
-      entities: true,
-            {defaultTem
-      compliance: false
-      
     outputFormat: {
-                  index={index}
-              ))}
-     
+      sections: ['Document Summary', 'Key Terms', 'Risk Analysis', 'Compliance Checklist'],
+      visualizations: ['timeline', 'risk-matrix']
+    }
   },
-   
-    id: 'data-spreadsheet',
-            >
-    description: 'Comprehensive analysis for spreadsheets and data files',
-                <p className="text-muted-f
-    icon: Table,
-                  Create Your 
+  {
+    id: 'research-paper',
+    name: 'Research Analysis',
+    description: 'Academic and research document analysis with methodology focus',
+    documentTypes: ['pdf', 'docx'],
+    icon: Brain,
+    color: 'text-purple-400',
     prompts: {
-          ) : (
-              {customTemplates.map((template, index) => (
-                  key={template.id}
-                  isSelected={selectedTemplate?.id === template.id}
-                  onEdit
-                    setShowCustomDialog(true)
-                  onDelete={() => handleDeleteT
-                  index={index}
-              ))}
+      summary: 'Analyze this research document focusing on methodology, findings, and implications',
+      insights: 'Extract key research insights including methodology strengths and limitations',
+      actions: 'Identify follow-up research actions and areas for further investigation',
+      recommendations: 'Provide recommendations for research improvement and future studies',
+      customQuestions: [
+        'What is the main research hypothesis?',
+        'What are the key findings and their significance?',
+        'What are the methodological strengths and limitations?'
       ]
     },
-  )
-
-  template: AnalysisTem
-  onSelect: () => void
-  onDelete?: () => void
-  index: number
-
-  const Icon = temp
-  return (
-      initial={{ opacity: 0, y: 20 }}
+    features: {
+      sentiment: false,
+      keyMetrics: true,
+      translation: true,
+      entities: true,
+      compliance: false
+    },
+    outputFormat: {
+      sections: ['Research Summary', 'Methodology Review', 'Key Findings', 'Future Research'],
+      visualizations: ['methodology-flow', 'results-charts']
     }
-   
+  },
+  {
+    id: 'business-proposal',
+    name: 'Business Proposal',
+    description: 'Business document analysis focusing on strategy and feasibility',
+    documentTypes: ['pdf', 'docx', 'pptx'],
+    icon: Building,
+    color: 'text-orange-400',
+    prompts: {
+      summary: 'Analyze this business proposal focusing on objectives, strategy, feasibility, and expected outcomes',
+      insights: 'Extract strategic insights including market opportunities and competitive advantages',
+      actions: 'Identify critical action items for proposal implementation',
+      recommendations: 'Provide strategic recommendations for proposal improvement',
+      customQuestions: [
+        'What is the core value proposition?',
+        'What are the main competitive advantages?',
+        'What are the key risks and mitigation strategies?'
+      ]
+    },
+    features: {
+      sentiment: true,
+      keyMetrics: true,
+      translation: true,
+      entities: true,
+      compliance: false
+    },
+    outputFormat: {
+      sections: ['Executive Summary', 'Strategy Analysis', 'Feasibility Assessment', 'Action Plan'],
+      visualizations: ['swot-analysis', 'timeline', 'financial-projections']
+    }
+  },
+  {
+    id: 'data-spreadsheet',
+    name: 'Data Analysis',
+    description: 'Comprehensive analysis for spreadsheets and data files',
+    documentTypes: ['xlsx', 'csv', 'json'],
+    icon: Table,
+    color: 'text-cyan-400',
+    prompts: {
+      summary: 'Analyze this data focusing on patterns, trends, and statistical insights',
+      insights: 'Extract key data insights including correlations and anomalies',
+      actions: 'Identify data-driven action items and optimization opportunities',
+      recommendations: 'Provide recommendations for data utilization and improvement',
+      customQuestions: [
+        'What are the main data patterns and trends?',
+        'What correlations exist between variables?',
+        'Are there any data quality issues?'
+      ]
+    },
+    features: {
+      sentiment: false,
+      keyMetrics: true,
+      translation: true,
+      entities: true,
+      compliance: true
+    },
+    outputFormat: {
+      sections: ['Data Overview', 'Statistical Analysis', 'Trends & Patterns', 'Recommendations'],
+      visualizations: ['charts', 'graphs', 'statistical-plots']
+    }
+  }
 ]
 
-              <div className={`p-2
-              </div>
-                <CardTitle className="text-base">{templa
-                  {template.documentT
-}
-
 export function AnalysisTemplates({ documentType, onTemplateSelect, selectedTemplate }: AnalysisTemplatesProps) {
-                  <Settings size={14} />
   const [showCustomDialog, setShowCustomDialog] = useState(false)
-                </Button>
-            )}
+  const [customTemplates, setCustomTemplates] = useKV<AnalysisTemplate[]>('custom-analysis-templates', [])
+  const [editingTemplate, setEditingTemplate] = useState<AnalysisTemplate | null>(null)
 
-        <CardContent onClick={onSelect}>
-            {template.description}
-
-   
-
-                  {feature}
+  const handleTemplateSelect = (template: AnalysisTemplate) => {
     onTemplateSelect(template)
-
   }
 
-    </motion.div>
-}
+  const handleCreateCustomTemplate = () => {
+    setEditingTemplate({
       id: '',
-  onSave: (temp
+      name: '',
       description: '',
-function CustomTemplateEditor({ temp
-
-    if (!template.name || !te
+      documentTypes: [documentType],
+      icon: FileText,
+      color: 'text-blue-400',
       prompts: {
-    onSave(template)
+        summary: '',
         insights: '',
-    <div className="
+        actions: '',
         recommendations: '',
-          <Input
+        customQuestions: []
       },
-            place
-        </div>
-        <div className="s
+      features: {
+        sentiment: false,
+        keyMetrics: false,
+        translation: false,
         entities: false,
-            onValueChange=
         compliance: false
-        
+      },
       outputFormat: {
-              <Select
+        sections: [],
         visualizations: []
-       
+      }
     })
-
+    setShowCustomDialog(true)
   }
 
-          onChange={(e) => setTemplate(prev => ({ ...prev, descripti
-          rows={2}
-      // Update existing
-      <div className="space-y-4">
-        
-       
-    } else {
-              value
-                ...prev,
-              }))}
+  const handleSaveTemplate = (template: AnalysisTemplate) => {
+    if (!template.name || !template.description) return
+
+    const templateWithId = {
+      ...template,
+      id: template.id || `custom-${Date.now()}`
     }
-          </div>
-          <div className="sp
-            <Textarea
+
+    if (template.id && customTemplates.some(t => t.id === template.id)) {
+      // Update existing
+      setCustomTemplates(current =>
+        current.map(t => t.id === template.id ? templateWithId : t)
+      )
+    } else {
+      // Add new
+      setCustomTemplates(current => [...current, templateWithId])
+    }
+
+    setShowCustomDialog(false)
+    setEditingTemplate(null)
+    toast.success('Template saved successfully')
   }
 
   const handleDeleteTemplate = (templateId: string) => {
-              rows={2}
+    setCustomTemplates(current => current.filter(t => t.id !== templateId))
     toast.success('Template deleted')
-   
+  }
 
-          
-                ...prev,
-              }))}
-             
-          </div>
-          <div className="space-y-2">
-            <Textarea
-          </p>
-              
-        
-              rows={2}
-          <DialogTrigger asChild>
-      </div>
-      <div className="space-y-4">
-        <div className="grid 
-            </Button>
-              <Switch
-                onCheckedChange={(checked) =>
-                    ...pre
-              <DialogTitle>
-              />
-              </DialogTitle>
-      </div>
-                Design a custom analysis template for your specific needs
-          Cancel
-            </DialogHeader>
-        </Bu
-    </div>
-}
-                template={editingTemplate}
+  const handleEditTemplate = (template: AnalysisTemplate) => {
+    setEditingTemplate(template)
+    setShowCustomDialog(true)
+  }
 
-                onCancel={() => {
-
-                  setEditingTemplate(null)
-
-              />
-
-
-
-
-
-
-
-
-
-        </TabsList>
-
-
-
-
-
-
-
-
-
-
-
-                  index={index}
-
-              ))}
-
-
-
-
-
-
-
-
-
-            >
-
-                <div className="text-4xl">🎨</div>
-
-
-
-
-
-
-
-
-
-          ) : (
-
-              {customTemplates.map((template, index) => (
-
-                  key={template.id}
-
-                  isSelected={selectedTemplate?.id === template.id}
-
-
-
-                    setShowCustomDialog(true)
-
-
-
-                  index={index}
-
-              ))}
-
-
-
-
-
+  const filteredDefaultTemplates = defaultTemplates.filter(template =>
+    template.documentTypes.includes(documentType)
   )
 
-
-
-
-
-  onSelect: () => void
-
-  onDelete?: () => void
-
-  index: number
-
-
-
-
-
   return (
-
-      initial={{ opacity: 0, y: 20 }}
-
-
-
-
-
-
-
-
-
-
-
-              </div>
-
-
-
-
-
-
-
-
-
-              <div className="flex gap-1">
-
-                  <Settings size={14} />
-                </Button>
-
-
-
-
-            )}
-
-
-
-        <CardContent onClick={onSelect}>
-
-            {template.description}
-
-
-
-
-
-
-
-                  {feature}
-
-              ))}
-
-
-
-
-
-
-
-    </motion.div>
-
-}
-
-
-
-
-
-}
-
-
-
-
-
-
-
-      return
-
-    onSave(template)
-
-
-
-
-
-
-
-          <Input
-
-
-
-
-
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h3 className="text-lg font-semibold">Analysis Templates</h3>
+          <p className="text-sm text-muted-foreground">
+            Choose a template to customize your AI analysis approach
+          </p>
         </div>
         
+        <Dialog open={showCustomDialog} onOpenChange={setShowCustomDialog}>
+          <DialogTrigger asChild>
+            <Button onClick={handleCreateCustomTemplate} className="gap-2">
+              <Plus size={16} />
+              Create Custom
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>
+                {editingTemplate?.id ? 'Edit Template' : 'Create Custom Template'}
+              </DialogTitle>
+              <DialogDescription>
+                Design a custom analysis template for your specific needs
+              </DialogDescription>
+            </DialogHeader>
+            {editingTemplate && (
+              <CustomTemplateEditor
+                template={editingTemplate}
+                onSave={handleSaveTemplate}
+                onCancel={() => {
+                  setShowCustomDialog(false)
+                  setEditingTemplate(null)
+                }}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+      </div>
 
+      <Tabs defaultValue="default" className="w-full">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="default">Default Templates</TabsTrigger>
+          <TabsTrigger value="custom">Custom Templates</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="default" className="space-y-4">
+          {filteredDefaultTemplates.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredDefaultTemplates.map((template, index) => (
+                <TemplateCard
+                  key={template.id}
+                  template={template}
+                  isSelected={selectedTemplate?.id === template.id}
+                  onSelect={() => handleTemplateSelect(template)}
+                  index={index}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4">📋</div>
+              <p className="text-muted-foreground">
+                No default templates available for this document type
+              </p>
+            </div>
+          )}
+        </TabsContent>
+        
+        <TabsContent value="custom" className="space-y-4">
+          {customTemplates.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {customTemplates.map((template, index) => (
+                <TemplateCard
+                  key={template.id}
+                  template={template}
+                  isSelected={selectedTemplate?.id === template.id}
+                  onSelect={() => handleTemplateSelect(template)}
+                  onEdit={() => handleEditTemplate(template)}
+                  onDelete={() => handleDeleteTemplate(template.id)}
+                  index={index}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4">🎨</div>
+              <p className="text-muted-foreground mb-4">
+                No custom templates yet
+              </p>
+              <Button onClick={handleCreateCustomTemplate} className="gap-2">
+                <Plus size={16} />
+                Create Your First Template
+              </Button>
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
 
+interface TemplateCardProps {
+  template: AnalysisTemplate
+  isSelected: boolean
+  onSelect: () => void
+  onEdit?: () => void
+  onDelete?: () => void
+  index: number
+}
 
+function TemplateCard({ template, isSelected, onSelect, onEdit, onDelete, index }: TemplateCardProps) {
+  const Icon = template.icon
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3, delay: index * 0.1 }}
+    >
+      <Card className={`cursor-pointer transition-all hover:shadow-lg ${
+        isSelected ? 'ring-2 ring-accent border-accent' : ''
+      }`}>
+        <CardHeader className="pb-3">
+          <div className="flex items-start justify-between">
+            <div className={`p-2 rounded-lg bg-muted/50 ${template.color}`}>
+              <Icon size={20} />
+            </div>
+            {(onEdit || onDelete) && (
+              <div className="flex gap-1">
+                {onEdit && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onEdit()
+                    }}
+                  >
+                    <Settings size={14} />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete()
+                    }}
+                  >
+                    <Trash2 size={14} />
+                  </Button>
+                )}
+              </div>
+            )}
+          </div>
+          <div>
+            <CardTitle className="text-base">{template.name}</CardTitle>
+            <CardDescription className="text-xs">
+              {template.documentTypes.join(', ')}
+            </CardDescription>
+          </div>
+        </CardHeader>
+        
+        <CardContent onClick={onSelect}>
+          <p className="text-sm text-muted-foreground mb-3">
+            {template.description}
+          </p>
+          
+          <div className="space-y-2">
+            <div className="flex flex-wrap gap-1">
+              {Object.entries(template.features)
+                .filter(([_, enabled]) => enabled)
+                .map(([feature]) => (
+                  <span key={feature} className="text-xs px-2 py-1 bg-muted rounded-md">
+                    {feature}
+                  </span>
+                ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}
 
+interface CustomTemplateEditorProps {
+  template: AnalysisTemplate
+  onSave: (template: AnalysisTemplate) => void
+  onCancel: () => void
+}
 
+function CustomTemplateEditor({ template, onSave, onCancel }: CustomTemplateEditorProps) {
+  const [editingTemplate, setTemplate] = useState<AnalysisTemplate>(template)
 
+  const handleSave = () => {
+    if (!editingTemplate.name || !editingTemplate.description) {
+      toast.error('Please fill in all required fields')
+      return
+    }
+    onSave(editingTemplate)
+  }
 
+  return (
+    <div className="space-y-6">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="template-name">Template Name *</Label>
+          <Input
+            id="template-name"
+            value={editingTemplate.name}
+            onChange={(e) => setTemplate(prev => ({ ...prev, name: e.target.value }))}
+            placeholder="Enter template name"
+          />
+        </div>
+        
+        <div className="space-y-2">
+          <Label htmlFor="template-description">Description *</Label>
+          <Textarea
+            id="template-description"
+            value={editingTemplate.description}
+            onChange={(e) => setTemplate(prev => ({ ...prev, description: e.target.value }))}
+            placeholder="Describe what this template analyzes"
+            rows={2}
+          />
+        </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-          rows={2}
-
+        <div className="space-y-2">
+          <Label htmlFor="document-types">Document Types</Label>
+          <Select
+            value={editingTemplate.documentTypes[0]}
+            onValueChange={(value) => setTemplate(prev => ({
+              ...prev,
+              documentTypes: [value]
+            }))}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pdf">PDF</SelectItem>
+              <SelectItem value="xlsx">Excel</SelectItem>
+              <SelectItem value="docx">Word</SelectItem>
+              <SelectItem value="csv">CSV</SelectItem>
+              <SelectItem value="pptx">PowerPoint</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       <div className="space-y-4">
-
-        
-
-
-
-
-
-
-
+        <Label>AI Prompts</Label>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="summary-prompt">Summary Prompt</Label>
+            <Textarea
+              id="summary-prompt"
+              value={editingTemplate.prompts.summary}
+              onChange={(e) => setTemplate(prev => ({
                 ...prev,
-
+                prompts: { ...prev.prompts, summary: e.target.value }
               }))}
               placeholder="Define how the AI should summarize this document type"
               rows={2}
@@ -538,7 +547,7 @@ function CustomTemplateEditor({ temp
             <Label htmlFor="insights-prompt">Insights Prompt</Label>
             <Textarea
               id="insights-prompt"
-              value={template.prompts.insights}
+              value={editingTemplate.prompts.insights}
               onChange={(e) => setTemplate(prev => ({
                 ...prev,
                 prompts: { ...prev.prompts, insights: e.target.value }
@@ -552,7 +561,7 @@ function CustomTemplateEditor({ temp
             <Label htmlFor="actions-prompt">Actions Prompt</Label>
             <Textarea
               id="actions-prompt"
-              value={template.prompts.actions}
+              value={editingTemplate.prompts.actions}
               onChange={(e) => setTemplate(prev => ({
                 ...prev,
                 prompts: { ...prev.prompts, actions: e.target.value }
@@ -566,7 +575,7 @@ function CustomTemplateEditor({ temp
             <Label htmlFor="recommendations-prompt">Recommendations Prompt</Label>
             <Textarea
               id="recommendations-prompt"
-              value={template.prompts.recommendations}
+              value={editingTemplate.prompts.recommendations}
               onChange={(e) => setTemplate(prev => ({
                 ...prev,
                 prompts: { ...prev.prompts, recommendations: e.target.value }
@@ -581,7 +590,7 @@ function CustomTemplateEditor({ temp
       <div className="space-y-4">
         <Label>Analysis Features</Label>
         <div className="grid grid-cols-2 gap-4">
-          {Object.entries(template.features).map(([feature, enabled]) => (
+          {Object.entries(editingTemplate.features).map(([feature, enabled]) => (
             <div key={feature} className="flex items-center justify-between">
               <Label className="capitalize">{feature.replace(/([A-Z])/g, ' $1').trim()}</Label>
               <Switch
