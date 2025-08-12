@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { List, Squares, Brain, Translate, ArrowsIn, DocumentDuplicate } from '@phosphor-icons/react'
+import { List, Squares, Brain, Translate, ArrowsIn, DocumentDuplicate, Settings } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { TemplateManager } from '@/components/TemplateManager'
 import { cn } from '@/lib/utils'
 
 interface HeaderProps {
@@ -12,11 +13,24 @@ interface HeaderProps {
 }
 
 export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderProps) {
+  const [showTemplateManager, setShowTemplateManager] = useState(false)
+
   return (
     <div className="space-y-6">
       {/* App Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Document Intelligence Hub</h1>
+        <div className="flex items-center justify-center gap-4">
+          <h1 className="text-3xl font-bold tracking-tight">Document Intelligence Hub</h1>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setShowTemplateManager(true)}
+            className="flex items-center gap-2"
+          >
+            <Settings size={16} />
+            Templates
+          </Button>
+        </div>
         <p className="text-muted-foreground max-w-2xl mx-auto">
           Transform your documents with AI-powered analysis, seamless translation, and intelligent compression
         </p>
@@ -111,6 +125,12 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
           </div>
         </div>
       )}
+      
+      {/* Template Manager */}
+      <TemplateManager 
+        isOpen={showTemplateManager} 
+        onClose={() => setShowTemplateManager(false)} 
+      />
     </div>
   )
 }

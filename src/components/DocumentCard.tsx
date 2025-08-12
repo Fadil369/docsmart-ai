@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Sparkles, Eye } from '@phosphor-icons/react'
+import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Sparkles, Eye, Target } from '@phosphor-icons/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -7,6 +7,7 @@ import { Separator } from '@/components/ui/separator'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
 import { DetailedAnalysis } from '@/components/DetailedAnalysis'
+import { SmartAnalysis } from '@/components/SmartAnalysis'
 import { toast } from 'sonner'
 
 interface DocumentFile {
@@ -38,6 +39,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
   const [isTranslating, setIsTranslating] = useState(false)
   const [isCompressing, setIsCompressing] = useState(false)
   const [showDetailedAnalysis, setShowDetailedAnalysis] = useState(false)
+  const [showSmartAnalysis, setShowSmartAnalysis] = useState(false)
   const [analysis, setAnalysis] = useKV<AnalysisResult | null>(`analysis_${document.id}`, null)
   const [compressionResult, setCompressionResult] = useState<{ originalSize: number, compressedSize: number } | null>(null)
 
@@ -158,6 +160,16 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setShowSmartAnalysis(true)}
+                className="flex items-center gap-2"
+              >
+                <Target size={16} />
+                Smart Analysis
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleAnalyze}
                 disabled={isAnalyzing}
                 className="flex items-center gap-2"
@@ -167,7 +179,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 ) : (
                   <Brain size={16} />
                 )}
-                {isAnalyzing ? 'Analyzing...' : 'AI Analyze'}
+                {isAnalyzing ? 'Analyzing...' : 'Quick AI'}
               </Button>
 
               <Button
@@ -198,15 +210,6 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                   <ArrowsIn size={16} />
                 )}
                 {isCompressing ? 'Compressing...' : 'Compress'}
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center gap-2"
-              >
-                <Download size={16} />
-                Download
               </Button>
             </div>
 
@@ -317,6 +320,15 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
           documentName={document.name}
           analysis={analysis}
           onClose={() => setShowDetailedAnalysis(false)}
+        />
+      )}
+
+      {/* Smart Analysis Modal */}
+      {showSmartAnalysis && (
+        <SmartAnalysis
+          document={document}
+          isOpen={showSmartAnalysis}
+          onClose={() => setShowSmartAnalysis(false)}
         />
       )}
     </>
