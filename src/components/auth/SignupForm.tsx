@@ -68,7 +68,11 @@ export function SignupForm({ onToggleMode }: SignupFormProps) {
       // Migrate any anonymous data to the new user account
       const currentUser = localStorage.getItem('auth_session')
       if (currentUser) {
-        migrateAnonymousData(currentUser)
+      const signupResponse = await signup(formData.email, formData.password, formData.name)
+      
+      // Migrate any anonymous data to the new user account
+      if (signupResponse && signupResponse.id) {
+        migrateAnonymousData(signupResponse.id)
       }
       
       toast.success('Account created successfully!', {
