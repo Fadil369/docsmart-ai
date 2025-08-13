@@ -6,12 +6,24 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
-import { AuthModal } from '@/components/auth/AuthModal'
-import { ProfilePage } from '@/components/auth/ProfilePage'
-import { AuthProvider, useAuth } from '@/lib/auth'
-import { useUserKV } from '@/lib/user-storage'
+<<<<<<< HEAD
+import { PaymentPage } from '@/components/PaymentPage'
+import { TrialCountdown } from '@/components/TrialCountdown'
+import { useKV } from '@/lib/mock-spark'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
+import { getOrCreateTrial, getTrialStatus, hasGatedAccess, endTrial, resetTrial } from '@/lib/user-trial'
+import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
+=======
+import { AuthModal } from '@/components/auth/AuthModal'
+import { UserProfile } from '@/components/auth/UserProfile'
+import { PaymentSession } from '@/types/payment'
+import { PaymentPage } from '@/components/payment'
+import { useKV } from '@/lib/mock-spark'
+import { useTheme } from '@/lib/theme'
+import { useSidebar } from '@/lib/use-sidebar'
+import { useAuth } from '@/contexts/AuthContext'
+>>>>>>> main
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
@@ -27,14 +39,18 @@ interface Document {
   progress?: number
 }
 
-type AppView = 'workspace' | 'profile'
-
-function AppContent() {
-  const { isAuthenticated, isLoading } = useAuth()
-  const [documents, setDocuments] = useUserKV<Document[]>('documents', [])
+function App() {
+  const { isAuthenticated, user } = useAuth()
+  const [documents, setDocuments] = useKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [currentView, setCurrentView] = useState<AppView>('workspace')
   const [showLanding, setShowLanding] = useState(false) // Temporarily skip landing
+<<<<<<< HEAD
+  const [currentPage, setCurrentPage] = useState<'app' | 'payment'>('app')
+=======
+  const [showAuth, setShowAuth] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+  const [showPayments, setShowPayments] = useState(false) // New payment page state
+>>>>>>> main
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   const [aiCopilotReady, setAiCopilotReady] = useState(false)
@@ -42,6 +58,44 @@ function AppContent() {
   // Initialize theme and sidebar on app load
   useTheme()
   const { isOpen, isMobile } = useSidebar()
+
+  // Initialize trial system
+  useEffect(() => {
+    getOrCreateTrial()
+    
+    // Expose trial functions globally for debugging/testing
+    if (typeof window !== 'undefined') {
+      window.trialDebug = {
+        getOrCreateTrial,
+        getTrialStatus,
+        hasGatedAccess,
+        endTrial,
+        resetTrial,
+        trackTrialEvent,
+        trackFeatureUsage
+      }
+    }
+  }, [])
+
+  // Handle routing based on hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      if (hash === '#/payment') {
+        setCurrentPage('payment')
+        trackPaymentPageView('hash_navigation')
+      } else {
+        setCurrentPage('app')
+      }
+    }
+
+    // Check initial hash
+    handleHashChange()
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
 
   // Initialize AI Copilot Assistant on app load
   useEffect(() => {
@@ -60,38 +114,8 @@ function AppContent() {
       }
     }
 
-    if (isAuthenticated && !isLoading) {
-      initializeAiCopilot()
-    }
-  }, [isAuthenticated, isLoading])
-
-  // Show auth modal if not authenticated
-  if (!isAuthenticated && !isLoading) {
-    return <AuthModal />
-  }
-
-  // Show loading spinner while checking auth
-  if (isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
-        />
-      </div>
-    )
-  }
-
-  // Show profile page
-  if (currentView === 'profile') {
-    return (
-      <div className="min-h-screen bg-background">
-        <ProfilePage />
-        <Toaster />
-      </div>
-    )
-  }
+    initializeAiCopilot()
+  }, [])
 
   const handleActionClick = async (actionId: string, files?: File[]) => {
     if (activeActions.includes(actionId)) return
@@ -153,8 +177,10 @@ function AppContent() {
       setTimeout(() => {
         setActiveActions(prev => prev.filter(id => id !== actionId))
         setActionProgress(prev => {
-          const { [actionId]: _removed, ...rest } = prev
-          return rest
+          // Remove the completed action
+          const newProgress = { ...prev }
+          delete newProgress[actionId]
+          return newProgress
         })
       }, 1000)
     }
@@ -202,6 +228,53 @@ function AppContent() {
 
   const handleGetStarted = () => {
     setShowLanding(false)
+    if (!isAuthenticated) {
+      setShowAuth(true)
+    }
+  }
+
+  const handleAuthClose = () => {
+    setShowAuth(false)
+  }
+
+  const handleProfileClose = () => {
+    setShowProfile(false)
+  }
+
+  const handleProfileClick = () => {
+    setShowProfile(true)
+  }
+
+  const handlePaymentsClick = () => {
+    setShowPayments(true)
+  }
+
+  const handlePaymentsClose = () => {
+    setShowPayments(false)
+  }
+
+  const handlePaymentSuccess = (_session: PaymentSession) => {
+    toast.success('Payment successful!', {
+      description: 'Your access has been activated.'
+    })
+    setShowPayments(false)
+  }
+
+  if (showPayments) {
+    return (
+      <>
+        <PaymentPage 
+          onClose={handlePaymentsClose}
+          onSuccess={handlePaymentSuccess}
+        />
+        <Toaster />
+      </>
+    )
+  }
+
+  const handleBackToApp = () => {
+    setCurrentPage('app')
+    window.location.hash = '#/'
   }
 
   if (showLanding) {
@@ -213,10 +286,20 @@ function AppContent() {
     )
   }
 
+  // Show payment page
+  if (currentPage === 'payment') {
+    return (
+      <>
+        <PaymentPage onBackToApp={handleBackToApp} />
+        <Toaster />
+      </>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <AppSidebar onNavigate={setCurrentView} />
+      <AppSidebar />
 
       {/* Main Content */}
       <div className={cn(
@@ -232,7 +315,16 @@ function AppContent() {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             aiCopilotReady={aiCopilotReady}
-            onNavigate={setCurrentView}
+            onPaymentsClick={handlePaymentsClick}
+            onAuthClick={() => setShowAuth(true)}
+            onProfileClick={handleProfileClick}
+            isAuthenticated={isAuthenticated}
+            user={user}
+          />
+
+          {/* Trial Countdown */}
+          <TrialCountdown 
+            onUpgradeClick={() => setCurrentPage('payment')}
           />
 
           {/* Enhanced Workspace Area */}
@@ -280,16 +372,17 @@ function AppContent() {
         <Footer />
       </div>
       
+      {/* Modals */}
+      {showAuth && (
+        <AuthModal onClose={handleAuthClose} />
+      )}
+      
+      {showProfile && (
+        <UserProfile onClose={handleProfileClose} />
+      )}
+      
       <Toaster />
     </div>
-  )
-}
-
-function App() {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
   )
 }
 

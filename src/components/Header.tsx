@@ -1,11 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { useAuth } from '@/lib/auth'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
-import { CreditCard, SignOut } from '@phosphor-icons/react'
+import { User as UserType } from '@/contexts/AuthContext'
 import { 
   File, 
   Square, 
@@ -18,50 +16,41 @@ import {
   Sun,
   House
 } from '@/lib/safe-icons'
-
-type AppView = 'workspace' | 'profile'
+import { CreditCard, LogIn } from 'lucide-react'
 
 interface HeaderProps {
   documentsCount: number
   viewMode: 'grid' | 'list'
   onViewModeChange: (mode: 'grid' | 'list') => void
   aiCopilotReady?: boolean
-  onNavigate?: (view: AppView) => void
+  onPaymentsClick?: () => void
+  onAuthClick?: () => void
+  onProfileClick?: () => void
+  isAuthenticated?: boolean
+  user?: UserType | null
 }
 
 export function Header({ 
   documentsCount, 
   viewMode, 
   onViewModeChange, 
-  aiCopilotReady = false,
-  onNavigate 
+  aiCopilotReady = false, 
+  onPaymentsClick,
+  onAuthClick,
+  onProfileClick,
+  isAuthenticated = false,
+  user
 }: HeaderProps) {
-  const { user, subscription, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { toggle, isMobile } = useSidebar()
 
-  const handleProfileClick = () => {
-    onNavigate?.('profile')
-  }
-
-  const handleWorkspaceClick = () => {
-    onNavigate?.('workspace')
-  }
-
-  const getUserInitials = () => {
-    if (!user?.name) return 'U'
-    const names = user.name.split(' ')
-    if (names.length === 1) return names[0].charAt(0).toUpperCase()
-    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase()
-  }
-
-  const getPlanBadgeColor = () => {
-    if (!subscription) return 'bg-gray-100 text-gray-600'
-    switch (subscription.plan) {
-      case 'pro': return 'bg-blue-100 text-blue-600'
-      case 'enterprise': return 'bg-purple-100 text-purple-600'
-      default: return 'bg-gray-100 text-gray-600'
-    }
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
   }
 
   return (
@@ -82,15 +71,10 @@ export function Header({
             <Brain size={isMobile ? 20 : 28} className="text-primary-foreground" />
           </div>
           <div className="hidden sm:block">
-            <button
-              onClick={handleWorkspaceClick}
-              className="text-left hover:opacity-80 transition-opacity"
-            >
-              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                BRAINSAITبرينسايت
-              </h1>
-              <p className="text-muted-foreground text-xs lg:text-sm">AI-Powered Document Intelligence</p>
-            </button>
+            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              BRAINSAITبرينسايت
+            </h1>
+            <p className="text-muted-foreground text-xs lg:text-sm">AI-Powered Document Intelligence</p>
           </div>
         </div>
         
@@ -162,6 +146,19 @@ export function Header({
           <Bell size={16} />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </Button>
+
+        {/* Payments - New */}
+        {onPaymentsClick && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onPaymentsClick}
+            className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <CreditCard size={16} className={isMobile ? "" : "mr-2"} />
+            <span className="hidden sm:inline">Upgrade</span>
+          </Button>
+        )}
         
         {/* Settings - Hidden on small screens */}
         <Button variant="outline" size="sm" className="hidden lg:flex">
@@ -169,53 +166,33 @@ export function Header({
           Settings
         </Button>
 
-        {/* User Profile Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-2 sm:h-auto sm:px-3">
-              <Avatar className="h-5 w-5 sm:h-6 sm:w-6">
-                <AvatarFallback className="text-xs font-medium">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="hidden sm:flex flex-col items-start">
-                <span className="text-sm font-medium leading-none">{user?.name}</span>
-                {subscription && (
-                  <Badge className={`text-xs mt-1 h-4 px-1 ${getPlanBadgeColor()}`}>
-                    {subscription.plan}
-                  </Badge>
-                )}
-              </div>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="flex items-center justify-start gap-2 p-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="text-sm font-medium">
-                  {getUserInitials()}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col space-y-1 leading-none">
-                <p className="text-sm font-medium">{user?.name}</p>
-                <p className="text-xs text-muted-foreground">{user?.email}</p>
-              </div>
-            </div>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleProfileClick}>
-              <User className="mr-2 h-4 w-4" />
-              Profile Settings
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleProfileClick}>
-              <CreditCard className="mr-2 h-4 w-4" />
-              Subscription
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={logout} className="text-red-600">
-              <SignOut className="mr-2 h-4 w-4" />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* Authentication Section */}
+        {isAuthenticated && user ? (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onProfileClick}
+            className="h-8 gap-2 sm:h-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarFallback className="text-xs">
+                {getInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="hidden sm:inline">{user.name}</span>
+          </Button>
+        ) : (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onAuthClick}
+            className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <LogIn size={16} className={isMobile ? "" : "mr-2"} />
+            <span className="hidden sm:inline">Sign In</span>
+          </Button>
+        )}
       </div>
     </header>
   )
