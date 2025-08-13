@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Download, Copy, Share, Eye } from '@phosphor-icons/react'
+import { Download, Copy, Eye } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'

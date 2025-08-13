@@ -24,7 +24,7 @@ import {
   X
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/mock-spark'
 import { useSidebar } from '@/lib/use-sidebar'
 
 interface Document {

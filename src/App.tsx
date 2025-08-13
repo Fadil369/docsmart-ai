@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Toaster } from '@/components/ui/sonner'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -6,7 +6,7 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/mock-spark'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
 import { motion } from 'framer-motion'
@@ -30,10 +30,31 @@ function App() {
   const [showLanding, setShowLanding] = useState(true)
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
+  const [aiCopilotReady, setAiCopilotReady] = useState(false)
   
   // Initialize theme and sidebar on app load
   useTheme()
   const { isOpen, isMobile } = useSidebar()
+
+  // Initialize AI Copilot Assistant on app load
+  useEffect(() => {
+    const initializeAiCopilot = async () => {
+      try {
+        await aiService.initialize()
+        setAiCopilotReady(true)
+        toast.success('AI Copilot Assistant is ready!', {
+          description: 'Advanced document analysis and insights are now available.'
+        })
+      } catch (error) {
+        console.error('Failed to initialize AI Copilot:', error)
+        toast.warning('AI Copilot initialization failed', {
+          description: 'Some AI features may be limited. Please try refreshing the page.'
+        })
+      }
+    }
+
+    initializeAiCopilot()
+  }, [])
 
   const handleActionClick = async (actionId: string, files?: File[]) => {
     if (activeActions.includes(actionId)) return
@@ -95,7 +116,7 @@ function App() {
       setTimeout(() => {
         setActiveActions(prev => prev.filter(id => id !== actionId))
         setActionProgress(prev => {
-          const { [actionId]: removed, ...rest } = prev
+          const { [actionId]: _removed, ...rest } = prev
           return rest
         })
       }, 1000)
@@ -168,11 +189,12 @@ function App() {
         // Ensure proper spacing on mobile
         isMobile && "w-full"
       )}>
-        <div className="flex-1 p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8">
+        <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10">
           <Header 
             documentsCount={documents.length}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
+            aiCopilotReady={aiCopilotReady}
           />
 
           {/* Enhanced Workspace Area */}
@@ -180,6 +202,7 @@ function App() {
             onActionClick={handleActionClick}
             activeActions={activeActions}
             actionProgress={actionProgress}
+            aiCopilotReady={aiCopilotReady}
           />
 
           {/* Documents Grid */}
@@ -188,20 +211,20 @@ function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3, delay: 0.2 }}
-              className="space-y-4 sm:space-y-6"
+              className="space-y-6 sm:space-y-8"
             >
-              <div className="space-y-2">
-                <h3 className="text-lg font-semibold">Recent Documents</h3>
-                <p className="text-sm text-muted-foreground">
+              <div className="space-y-3">
+                <h3 className="text-xl sm:text-2xl font-semibold">Recent Documents</h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   {documents.length} document{documents.length !== 1 ? 's' : ''} in your workspace
                 </p>
               </div>
               
               <div className={cn(
-                "gap-3 sm:gap-4 lg:gap-6",
+                "gap-4 sm:gap-6 lg:gap-8",
                 viewMode === 'grid' 
                   ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "flex flex-col space-y-3 sm:space-y-4"
+                  : "flex flex-col space-y-4 sm:space-y-6"
               )}>
                 {documents.map((document, index) => (
                   <DocumentCard
