@@ -6,6 +6,7 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
+import { TrialCountdown } from '@/components/TrialCountdown'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { UserProfile } from '@/components/auth/UserProfile'
 import { PaymentSession } from '@/types/payment'
@@ -18,7 +19,9 @@ import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
 import { toast } from 'sonner'
+import { getOrCreateTrial, getTrialStatus, hasGatedAccess, endTrial, resetTrial } from '@/lib/user-trial'
 
+import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
 interface Document {
   id: string
   name: string
