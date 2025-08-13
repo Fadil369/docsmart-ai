@@ -15,7 +15,7 @@
 :root {
   --radius: 1rem;
   
-  /* Dark theme colors */
+  /* Professional theme colors for Document Intelligence Hub */
   --background: oklch(0.97 0.02 75);
   --foreground: oklch(0.22 0.04 55);
   

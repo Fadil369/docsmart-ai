@@ -60,116 +60,20 @@ export function LiveCollaboration({ className }: LiveCollaborationProps) {
   const [newComment, setNewComment] = useState('')
   const [showAllActivities, setShowAllActivities] = useState(false)
 
-  // Simulate real-time updates
+  // Real-time updates placeholder - to be implemented with actual collaboration service
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Simulate random collaborative activities
-      if (Math.random() > 0.7) {
-        const mockActivities: CollaborativeActivity[] = [
-          {
-            id: Date.now().toString(),
-            type: 'template_used',
-            userId: 'user-1',
-            userName: 'Sarah Chen',
-            userAvatar: 'SC',
-            templateName: 'Legal Contract Analysis',
-            templateId: 'template-1',
-            description: 'Used Legal Contract Analysis template for document processing',
-            timestamp: new Date()
-          },
-          {
-            id: (Date.now() + 1).toString(),
-            type: 'template_rated',
-            userId: 'user-2',
-            userName: 'Ahmed Hassan',
-            userAvatar: 'AH',
-            templateName: 'Financial Report Analysis',
-            templateId: 'template-2',
-            description: 'Rated Financial Report Analysis template',
-            timestamp: new Date(),
-            metadata: {
-              rating: 5,
-              comment: 'Excellent template for quarterly reports!'
-            }
-          }
-        ]
+    // This would connect to your real-time collaboration service
+    // For now, this is just a placeholder for the production setup
+    return () => {
+      // Cleanup any real-time connections
+    }
+  }, [])
 
-        const randomActivity = mockActivities[Math.floor(Math.random() * mockActivities.length)]
-        setActivities(current => [randomActivity, ...current.slice(0, 19)]) // Keep only last 20
-      }
-
-      // Update online users
-      setOnlineUsers(current => 
-        current.map(user => ({
-          ...user,
-          lastSeen: new Date(),
-          isEditing: Math.random() > 0.8
-        }))
-      )
-    }, 5000) // Update every 5 seconds
-
-    return () => clearInterval(interval)
-  }, [setActivities, setOnlineUsers])
-
-  // Initialize with sample data
+  // Initialize empty state for production
   useEffect(() => {
-    if (onlineUsers.length === 0) {
-      const sampleUsers: OnlineUser[] = [
-        {
-          id: 'user-1',
-          name: 'Sarah Chen',
-          avatar: 'SC',
-          currentTemplate: 'Legal Contract Analysis',
-          lastSeen: new Date(),
-          isEditing: true
-        },
-        {
-          id: 'user-2',
-          name: 'Ahmed Hassan',
-          avatar: 'AH',
-          currentTemplate: 'Financial Report Template',
-          lastSeen: new Date(Date.now() - 1000 * 60 * 15), // 15 minutes ago
-          isEditing: false
-        },
-        {
-          id: 'user-3',
-          name: 'Maria Rodriguez',
-          avatar: 'MR',
-          lastSeen: new Date(Date.now() - 1000 * 60 * 5), // 5 minutes ago
-          isEditing: false
-        }
-      ]
-      setOnlineUsers(sampleUsers)
-    }
-
-    if (notifications.length === 0) {
-      const sampleNotifications: CollaborationNotification[] = [
-        {
-          id: 'notif-1',
-          type: 'share_request',
-          title: 'Template Share Request',
-          message: 'Sarah Chen wants to share "Legal Contract Analysis" template with you',
-          fromUser: 'Sarah Chen',
-          templateId: 'template-1',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30),
-          read: false,
-          actionRequired: true
-        },
-        {
-          id: 'notif-2',
-          type: 'template_update',
-          title: 'Template Updated',
-          message: 'Ahmed Hassan updated "Financial Report Analysis" template',
-          fromUser: 'Ahmed Hassan',
-          templateId: 'template-2',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60),
-          read: false,
-          actionRequired: false
-        }
-      ]
-      setNotifications(sampleNotifications)
-    }
-  }, [onlineUsers.length, notifications.length, setOnlineUsers, setNotifications])
+    // All collaboration data starts empty in production
+    // Real data will be populated through actual user interactions
+  }, [])
 
   const unreadNotifications = notifications.filter(n => !n.read)
   const recentActivities = showAllActivities ? activities : activities.slice(0, 8)

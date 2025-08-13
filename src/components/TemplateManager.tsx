@@ -46,50 +46,11 @@ export function TemplateManager({ isOpen, onClose }: TemplateManagerProps) {
   const [sortBy, setSortBy] = useState<'name' | 'usage' | 'date'>('name')
   const [showCreatePreset, setShowCreatePreset] = useState(false)
 
-  // Initialize with default presets if none exist
+  // Initialize empty state for production
   useEffect(() => {
-    if (templatePresets.length === 0) {
-      const defaultPresets: TemplatePreset[] = [
-        {
-          id: 'business-suite',
-          name: 'Business Document Suite',
-          description: 'Comprehensive templates for business documents, reports, and proposals',
-          templates: [], // Would contain business-related templates
-          isDefault: true,
-          isFavorite: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          usageCount: 0,
-          tags: ['business', 'reports', 'financial']
-        },
-        {
-          id: 'legal-pack',
-          name: 'Legal Document Pack',
-          description: 'Specialized templates for contracts, agreements, and legal documents',
-          templates: [], // Would contain legal templates
-          isDefault: true,
-          isFavorite: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          usageCount: 0,
-          tags: ['legal', 'contracts', 'compliance']
-        },
-        {
-          id: 'research-toolkit',
-          name: 'Research & Academic Toolkit',
-          description: 'Templates designed for academic papers, research documents, and studies',
-          templates: [], // Would contain research templates
-          isDefault: true,
-          isFavorite: false,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          usageCount: 0,
-          tags: ['research', 'academic', 'analysis']
-        }
-      ]
-      setTemplatePresets(defaultPresets)
-    }
-  }, [templatePresets.length, setTemplatePresets])
+    // All template presets start empty in production
+    // Users will create their own presets as needed
+  }, [])
 
   const filteredPresets = templatePresets
     .filter(preset => 
