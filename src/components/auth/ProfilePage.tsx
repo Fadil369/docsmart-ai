@@ -225,7 +225,7 @@ export function ProfilePage() {
                     <div className="space-y-2">
                       <Label>Payment Method</Label>
                       <p className="text-sm text-muted-foreground">
-                        {subscription.paymentMethod.brand?.toUpperCase()} ****{subscription.paymentMethod.last4}
+                        {(subscription.paymentMethod.brand?.toUpperCase() ?? 'CARD')} ****{subscription.paymentMethod.last4}
                       </p>
                     </div>
                   </div>
