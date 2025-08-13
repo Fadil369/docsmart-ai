@@ -5,27 +5,26 @@ import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { useTheme } from '@/lib/theme'
 import { 
-  FileText, 
+  File, 
   Brain, 
-  Translate, 
+  Globe, 
   ArrowsIn, 
-  Shield, 
+  Circle as Shield, 
   Lightning, 
-  Globe,
-  ChartLine,
+  Globe as ChartLine,
   Users,
-  Sparkle,
-  ArrowRight,
-  CheckCircle,
+  Circle as Sparkle,
+  Circle as ArrowRight,
+  Circle as CheckCircle,
   Upload,
-  Merge,
+  ArrowsIn as Merge,
   Share,
   Copy,
   Download,
-  Language,
+  Globe as Language,
   Moon,
   Sun
-} from '@phosphor-icons/react'
+} from '@/lib/safe-icons'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 
@@ -185,11 +184,11 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
   const features = [
     { icon: Upload, color: "bg-blue-500", title: "Upload", description: "Any document type, any size" },
     { icon: Brain, color: "bg-purple-500", title: "AI Analysis", description: "Powered by Copilot API" },
-    { icon: Translate, color: "bg-green-500", title: "Translate", description: "AR ⇄ EN instantly" },
+    { icon: Globe, color: "bg-green-500", title: "Globe", description: "AR ⇄ EN instantly" },
     { icon: ArrowsIn, color: "bg-orange-500", title: "Compress", description: "Up to 70% reduction" },
     { icon: Merge, color: "bg-indigo-500", title: "Merge", description: "Intelligent consolidation" },
     { icon: Users, color: "bg-pink-500", title: "Collaborate", description: "Real-time teamwork" },
-    { icon: FileText, color: "bg-yellow-500", title: "Templates", description: "Custom & reusable" },
+    { icon: File, color: "bg-yellow-500", title: "Templates", description: "Custom & reusable" },
     { icon: Share, color: "bg-cyan-500", title: "Share", description: "Seamless distribution" },
     { icon: Copy, color: "bg-gray-500", title: "Duplicate", description: "Smart copying" },
     { icon: Download, color: "bg-emerald-500", title: "Export", description: "Multiple formats" }

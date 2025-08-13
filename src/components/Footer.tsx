@@ -1,4 +1,4 @@
-import { Heart } from '@phosphor-icons/react'
+import { Heart } from '@/lib/safe-icons'
 
 export function Footer() {
   return (

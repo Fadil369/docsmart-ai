@@ -18,7 +18,7 @@ import {
   Download,
   UploadSimple,
   Circle
-} from '@phosphor-icons/react'
+} from '@/lib/safe-icons'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 

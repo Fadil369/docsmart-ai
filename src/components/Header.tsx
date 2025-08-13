@@ -4,7 +4,7 @@ import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
 import { 
   File, 
-  Grid, 
+  Square, 
   List, 
   Gear,
   Brain,
@@ -12,8 +12,8 @@ import {
   User,
   Moon,
   Sun,
-  Menu
-} from '@phosphor-icons/react'
+  House
+} from '@/lib/safe-icons'
 
 interface HeaderProps {
   documentsCount: number
@@ -36,7 +36,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
           onClick={toggle}
           className="h-8 w-8 p-0 lg:h-9 lg:w-9"
         >
-          <Menu size={isMobile ? 16 : 18} />
+          <House size={isMobile ? 16 : 18} />
         </Button>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -102,7 +102,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
             onClick={() => onViewModeChange('grid')}
             className="h-7 w-7 p-0"
           >
-            <Grid size={14} />
+            <Square size={14} />
           </Button>
           <Button
             variant={viewMode === 'list' ? 'default' : 'ghost'}
