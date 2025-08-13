@@ -286,7 +286,7 @@ class AuthService {
       if (key && key.startsWith(`user_${userId}_`)) {
         userDataKeys.push(key)
       }
-    }
+    const userDataKeys = this._getUserDataKeys(userId);
     userDataKeys.forEach(key => localStorage.removeItem(key))
 
     this.saveToStorage()
