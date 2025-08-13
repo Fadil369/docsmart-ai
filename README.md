@@ -281,3 +281,69 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Built with ❤️ by the DocSmart AI Team**
+## 🚀 Deployment
+
+This project is configured for deployment on **Cloudflare Pages** with automatic GitHub integration.
+
+### Quick Deploy to Cloudflare Pages
+
+1. **Fork this repository** or use it as a template
+2. **Connect to Cloudflare Pages**:
+   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com/) → Pages
+   - Click "Create a project" → "Connect to Git"
+   - Select your repository
+
+3. **Configure build settings**:
+   ```
+   Project name: docsmart-ai
+   Production branch: main
+   Build command: npm run build
+   Build output directory: dist
+   ```
+
+4. **Set environment variables** in Cloudflare Pages:
+   ```
+   NODE_ENV=production
+   VITE_APP_ENV=production
+   ```
+
+5. **Deploy!** - Your app will be live at `https://docsmart-ai.pages.dev`
+
+### Local Development with Cloudflare
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
+
+# Deploy to Cloudflare Pages (requires auth)
+npm run deploy:cloudflare
+```
+
+### GitHub Actions Deployment
+
+The repository includes automated deployment via GitHub Actions. To enable:
+
+1. **Add GitHub Secrets**:
+   - `CLOUDFLARE_API_TOKEN` - Your Cloudflare API token
+   - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
+
+2. **Push to main branch** - Deployment happens automatically!
+
+For detailed setup instructions, see [CLOUDFLARE_DEPLOYMENT.md](./CLOUDFLARE_DEPLOYMENT.md).
+
+### Migration from GitHub Pages
+
+If you're migrating from GitHub Pages:
+- The old GitHub Pages workflow has been removed
+- DNS records need to be updated to point to Cloudflare Pages
+- All functionality is preserved with better performance and features
+
