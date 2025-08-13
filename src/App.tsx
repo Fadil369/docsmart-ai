@@ -1,406 +1,91 @@
-import { useState, useEffect } from 'react'
-import { Toaster } from '@/components/ui/sonner'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
-import { WorkspaceArea } from '@/components/WorkspaceArea'
+// App.tsx - Phase 1 Refactored: Clean provider composition + routing
+// Extracted: page logic → individual pages, demo timer → context, documents → context
+
+import { Suspense } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Toaster } from 'sonner'
+import { ErrorBoundary } from 'react-error-boundary'
+
+// Context Providers
+import { DocumentProvider } from '@/contexts/DocumentContext'
+import { DemoTimerProvider } from '@/contexts/DemoTimerContext'
+import { SidebarProvider } from '@/components/ui/sidebar'
+
+// Pages
+import { LandingPage } from '@/pages/LandingPage'
+import { WorkspacePage } from '@/pages/WorkspacePage'
+import { PaymentPage } from '@/pages/PaymentPage'
+
+// Components
 import { AppSidebar } from '@/components/AppSidebar'
-import { DocumentCard } from '@/components/DocumentCard'
-import { LandingPage } from '@/components/LandingPage'
-import { TrialCountdown } from '@/components/TrialCountdown'
-import { DemoCountdown } from '@/components/DemoCountdown'
-import { AuthModal } from '@/components/auth/AuthModal'
-import { UserProfile } from '@/components/auth/UserProfile'
-import { PaymentSession } from '@/types/payment'
-import { PaymentPage } from '@/components/payment'
-import { useKV } from '@/lib/mock-spark'
-import { useTheme } from '@/lib/theme'
-import { useSidebar } from '@/lib/use-sidebar'
-import { useAuth } from '@/contexts/AuthContext'
-import { motion } from 'framer-motion'
-import { cn } from '@/lib/utils'
-import { aiService } from '@/lib/ai-service'
-import { toast } from 'sonner'
-import { getOrCreateTrial, getTrialStatus, hasGatedAccess, endTrial, resetTrial } from '@/lib/user-trial'
-import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
+import { ErrorFallback } from '@/ErrorFallback'
 
-interface Document {
-  id: string
-  name: string
-  size: number
-  type: string
-  status: string
-  uploadedAt: Date | string
-  progress?: number
-}
-
-function App() {
-  const { isAuthenticated, user } = useAuth()
-  const [documents, setDocuments] = useKV<Document[]>('documents', [])
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [showAuth, setShowAuth] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
-  const [currentPage, setCurrentPage] = useState<'landing' | 'app' | 'payment'>('landing')
-  const [demoStartTime, setDemoStartTime] = useState<number | null>(null)
-  const [isDemoActive, setIsDemoActive] = useState(false)
-  const [demoTimeRemaining, setDemoTimeRemaining] = useState<number>(0)
-  const [activeActions, setActiveActions] = useState<string[]>([])
-  const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
-  const [aiCopilotReady, setAiCopilotReady] = useState(false)
-  
-  // Initialize theme and sidebar on app load
-  useTheme()
-  const { isOpen, isMobile } = useSidebar()
-
-  // Initialize trial system
-  useEffect(() => {
-    getOrCreateTrial()
-    
-    // Expose trial functions globally for debugging/testing
-    if (typeof window !== 'undefined') {
-      window.trialDebug = {
-        getOrCreateTrial,
-        getTrialStatus,
-        hasGatedAccess,
-        endTrial,
-        resetTrial,
-        trackTrialEvent,
-        trackFeatureUsage
-      }
-    }
-  }, [])
-
-  // Handle routing based on hash
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash
-      if (hash === '#/payment') {
-        setCurrentPage('payment')
-        trackPaymentPageView('hash_navigation')
-      } else if (hash === '#/app') {
-        setCurrentPage('app')
-      }
-      // Do not automatically set to app - let landing page stay
-    }
-
-    // Check initial hash only if there is one
-    const currentHash = window.location.hash
-    if (currentHash === '#/payment') {
-      setCurrentPage('payment')
-    } else if (currentHash === '#/app') {
-      setCurrentPage('app')
-    }
-
-    // Listen for hash changes
-    window.addEventListener('hashchange', handleHashChange)
-    return () => window.removeEventListener('hashchange', handleHashChange)
-  }, [])
-
-  // Demo timer effect
-  useEffect(() => {
-    if (!isDemoActive || !demoStartTime) return
-
-    const interval = setInterval(() => {
-      const elapsed = Date.now() - demoStartTime
-      const remaining = Math.max(0, 300000 - elapsed) // 5 minutes in ms
-      setDemoTimeRemaining(remaining)
-
-      if (remaining === 0) {
-        setIsDemoActive(false)
-        setCurrentPage('payment')
-        trackTrialEvent('demo_expired')
-        clearInterval(interval)
-      }
-    }, 1000)
-
-    return () => clearInterval(interval)
-  }, [isDemoActive, demoStartTime])
-
-  // Initialize AI Copilot Assistant on app load
-  useEffect(() => {
-    const initializeAiCopilot = async () => {
-      try {
-        await aiService.initialize()
-        setAiCopilotReady(true)
-        toast.success('AI Copilot Assistant is ready!', {
-          description: 'Advanced document analysis and insights are now available.'
-        })
-      } catch (error) {
-        console.error('Failed to initialize AI Copilot:', error)
-        toast.warning('AI Copilot initialization failed', {
-          description: 'Some AI features may be limited. Please try refreshing the page.'
-        })
-      }
-    }
-
-    initializeAiCopilot()
-  }, [])
-
-  const handleActionClick = async (actionId: string, files?: File[]) => {
-    if (activeActions.includes(actionId)) return
-
-    setActiveActions(prev => [...prev, actionId])
-    setActionProgress(prev => ({ ...prev, [actionId]: 0 }))
-
-    try {
-      switch (actionId) {
-        case 'upload':
-          if (files) {
-            await handleFilesUploaded(files)
-          }
-          break
-        
-        case 'translate':
-          await simulateProgress(actionId, 'Translation completed')
-          break
-        
-        case 'compress':
-          await simulateProgress(actionId, 'Compression completed with 70% size reduction')
-          break
-        
-        case 'merge':
-          await simulateProgress(actionId, 'Documents merged successfully')
-          break
-        
-        case 'analyze':
-          await simulateProgress(actionId, 'Analysis completed - insights generated')
-          break
-        
-        case 'ai-analyze':
-          await simulateProgress(actionId, 'AI Copilot analysis completed with advanced insights')
-          break
-        
-        case 'share':
-          await simulateProgress(actionId, 'Document shared with team members')
-          break
-        
-        case 'collaborate':
-          await simulateProgress(actionId, 'Collaboration session started')
-          break
-        
-        case 'template':
-          await simulateProgress(actionId, 'Template created successfully')
-          break
-        
-        case 'copy':
-          await simulateProgress(actionId, 'Document copied')
-          break
-        
-        case 'export':
-          await simulateProgress(actionId, 'Document exported in multiple formats')
-          break
-      }
-    } catch (error) {
-      toast.error(`${actionId} failed: ${error}`)
-    } finally {
-      setTimeout(() => {
-        setActiveActions(prev => prev.filter(id => id !== actionId))
-        setActionProgress(prev => {
-          // Remove the completed action
-          const newProgress = { ...prev }
-          delete newProgress[actionId]
-          return newProgress
-        })
-      }, 1000)
-    }
-  }
-
-  const simulateProgress = async (actionId: string, successMessage: string) => {
-    for (let i = 0; i <= 100; i += 10) {
-      setActionProgress(prev => ({ ...prev, [actionId]: i }))
-      await new Promise(resolve => setTimeout(resolve, 100))
-    }
-    toast.success(successMessage)
-  }
-
-  const handleFilesUploaded = async (uploadedFiles: File[]) => {
-    const newDocuments: Document[] = uploadedFiles.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      status: 'processing',
-      uploadedAt: new Date(),
-      progress: 0
-    }))
-
-    setDocuments(currentDocs => [...currentDocs, ...newDocuments])
-
-    // Simulate processing
-    for (const doc of newDocuments) {
-      for (let progress = 0; progress <= 100; progress += 20) {
-        setDocuments(currentDocs =>
-          currentDocs.map(d =>
-            d.id === doc.id ? { ...d, progress } : d
-          )
-        )
-        await new Promise(resolve => setTimeout(resolve, 200))
-      }
-      
-      setDocuments(currentDocs =>
-        currentDocs.map(d =>
-          d.id === doc.id ? { ...d, status: 'completed', progress: 100 } : d
-        )
-      )
-    }
-  }
-
-  const handleGetStarted = () => {
-    // Start timed demo
-    const now = Date.now()
-    setDemoStartTime(now)
-    setIsDemoActive(true)
-    setDemoTimeRemaining(300000) // 5 minutes
-    setCurrentPage('app')
-    trackTrialEvent('demo_started')
-    // Set hash for app access
-    window.location.hash = '#/app'
-  }
-
-  const handleAuthClose = () => {
-    setShowAuth(false)
-  }
-
-  const handleProfileClose = () => {
-    setShowProfile(false)
-  }
-
-  const handleProfileClick = () => {
-    setShowProfile(true)
-  }
-
-  const handlePaymentsClick = () => {
-    setCurrentPage('payment')
-    window.location.hash = '#/payment'
-  }
-
-  const handlePaymentSuccess = (_session: PaymentSession) => {
-    toast.success('Payment successful!', {
-      description: 'Your access has been activated.'
-    })
-    setCurrentPage('app')
-    window.location.hash = '#/app'
-  }
-
-  const handleBackToApp = () => {
-    setCurrentPage('app')
-    window.location.hash = '#/app'
-  }
-
-  // Show landing page
-  if (currentPage === 'landing') {
-    return (
-      <>
-        <LandingPage onGetStarted={handleGetStarted} />
-        <Toaster />
-      </>
-    )
-  }
-
-  // Show payment page
-  if (currentPage === 'payment') {
-    return (
-      <>
-        <PaymentPage onBackToApp={handleBackToApp} />
-        <Toaster />
-      </>
-    )
-  }
-
+// Loading Skeleton Component
+function PageSkeleton() {
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <AppSidebar />
-
-      {/* Main Content */}
-      <div className={cn(
-        "flex-1 flex flex-col transition-all duration-300",
-        // Add left margin on desktop when sidebar is closed
-        !isMobile && !isOpen && "ml-0",
-        // Ensure proper spacing on mobile
-        isMobile && "w-full"
-      )}>
-        <div className="flex-1 p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10">
-          <Header 
-            documentsCount={documents.length}
-            viewMode={viewMode}
-            onViewModeChange={setViewMode}
-            aiCopilotReady={aiCopilotReady}
-            onPaymentsClick={handlePaymentsClick}
-            onAuthClick={() => setShowAuth(true)}
-            onProfileClick={handleProfileClick}
-            isAuthenticated={isAuthenticated}
-            user={user}
-          />
-
-          {/* Demo/Trial Countdown */}
-          {isDemoActive ? (
-            <DemoCountdown 
-              timeRemaining={demoTimeRemaining}
-              onUpgradeClick={() => setCurrentPage('payment')}
-            />
-          ) : (
-            <TrialCountdown 
-              onUpgradeClick={() => setCurrentPage('payment')}
-            />
-          )}
-
-          {/* Enhanced Workspace Area */}
-          <WorkspaceArea 
-            onActionClick={handleActionClick}
-            activeActions={activeActions}
-            actionProgress={actionProgress}
-            aiCopilotReady={aiCopilotReady}
-          />
-
-          {/* Documents Grid */}
-          {documents.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
-              className="space-y-6 sm:space-y-8"
-            >
-              <div className="space-y-3">
-                <h3 className="text-xl sm:text-2xl font-semibold">Recent Documents</h3>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  {documents.length} document{documents.length !== 1 ? 's' : ''} in your workspace
-                </p>
-              </div>
-              
-              <div className={cn(
-                "gap-4 sm:gap-6 lg:gap-8",
-                viewMode === 'grid' 
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-                  : "flex flex-col space-y-4 sm:space-y-6"
-              )}>
-                {documents.map((document, index) => (
-                  <DocumentCard
-                    key={document.id}
-                    document={document}
-                    index={index}
-                  />
-                ))}
-              </div>
-            </motion.div>
-          )}
+    <div className="min-h-screen bg-background">
+      <div className="animate-pulse space-y-4 p-8">
+        <div className="h-8 bg-muted rounded w-1/4"></div>
+        <div className="h-4 bg-muted rounded w-1/2"></div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="h-32 bg-muted rounded"></div>
+          ))}
         </div>
-        
-        {/* Footer */}
-        <Footer />
       </div>
-      
-      {/* Modals */}
-      {showAuth && (
-        <AuthModal onClose={handleAuthClose} />
-      )}
-      
-      {showProfile && (
-        <UserProfile onClose={handleProfileClose} />
-      )}
-      
-      <Toaster />
     </div>
   )
 }
 
-export default App
+// Workspace Layout with Sidebar
+function WorkspaceLayout() {
+  return (
+    <SidebarProvider>
+      <div className="flex min-h-screen bg-background">
+        <AppSidebar />
+        <WorkspacePage />
+      </div>
+    </SidebarProvider>
+  )
+}
+
+// Main App Component
+export default function App() {
+  return (
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <BrowserRouter>
+        <DemoTimerProvider
+          options={{
+            durationMs: 3 * 60 * 1000, // 3 minutes
+            onExpire: () => {
+              console.log('Demo expired - consider showing upgrade modal')
+            }
+          }}
+        >
+          <DocumentProvider>
+            <div className="min-h-screen bg-background">
+              <Suspense fallback={<PageSkeleton />}>
+                <Routes>
+                  {/* Landing Page */}
+                  <Route path="/" element={<LandingPage />} />
+                  
+                  {/* Workspace with Sidebar */}
+                  <Route path="/workspace" element={<WorkspaceLayout />} />
+                  
+                  {/* Payment */}
+                  <Route path="/payment" element={<PaymentPage />} />
+                  
+                  {/* Fallback redirect */}
+                  <Route path="*" element={<Navigate to="/" replace />} />
+                </Routes>
+              </Suspense>
+
+              {/* Global UI */}
+              <Toaster position="top-right" />
+            </div>
+          </DocumentProvider>
+        </DemoTimerProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
+  )
+}
