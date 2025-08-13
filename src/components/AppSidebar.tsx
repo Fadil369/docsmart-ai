@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Progress } from '@/components/ui/progress'
 import { motion, AnimatePresence } from 'framer-motion'
+import { CreditCard } from '@phosphor-icons/react'
 import { 
   File, 
   Circle, 
@@ -20,11 +21,19 @@ import {
   Lightning,
   Circle as CheckCircle,
   AlertCircle,
-  Circle as X
+  Circle as X,
+  User
 } from '@/lib/safe-icons'
 import { cn } from '@/lib/utils'
-import { useKV } from '@/lib/mock-spark'
+import { useUserKV } from '@/lib/user-storage'
+import { useAuth } from '@/lib/auth'
 import { useSidebar } from '@/lib/use-sidebar'
+
+type AppView = 'workspace' | 'profile'
+
+interface AppSidebarProps {
+  onNavigate?: (view: AppView) => void
+}
 
 interface Document {
   id: string
@@ -63,12 +72,13 @@ interface Notification {
   read: boolean
 }
 
-export function AppSidebar() {
+export function AppSidebar({ onNavigate }: AppSidebarProps) {
   const { isOpen, isMobile, close } = useSidebar()
-  const [documents] = useKV<Document[]>('ongoing-documents', [])
-  const [activities] = useKV<Activity[]>('live-activities', [])
-  const [teamMembers] = useKV<TeamMember[]>('team-members', [])
-  const [notifications] = useKV<Notification[]>('notifications', [])
+  const { user, subscription } = useAuth()
+  const [documents] = useUserKV<Document[]>('ongoing-documents', [])
+  const [activities] = useUserKV<Activity[]>('live-activities', [])
+  const [teamMembers] = useUserKV<TeamMember[]>('team-members', [])
+  const [notifications] = useUserKV<Notification[]>('notifications', [])
   const [activeTab, setActiveTab] = useState<'documents' | 'activity' | 'team' | 'drive' | 'notifications'>('documents')
 
   // Close sidebar when clicking outside on mobile
@@ -145,6 +155,16 @@ export function AppSidebar() {
     { id: 'team', label: 'Team', icon: Users, count: teamMembers.filter(m => m.status === 'online').length },
     { id: 'drive', label: 'Drive', icon: House, count: 0 },
     { id: 'notifications', label: 'Alerts', icon: Bell, count: notifications.filter(n => !n.read).length }
+  ]
+
+  const navigationItems = [
+    { id: 'profile', label: 'Profile Settings', icon: User, action: () => onNavigate?.('profile') },
+    { 
+      id: 'subscription', 
+      label: subscription?.plan === 'basic' ? 'Upgrade Plan' : 'Subscription', 
+      icon: CreditCard, 
+      action: () => onNavigate?.('profile') 
+    }
   ]
 
   return (
@@ -224,6 +244,32 @@ export function AppSidebar() {
                   </Button>
                 )
               })}
+            </div>
+
+            {/* User Navigation */}
+            <div className="mt-4 pt-4 border-t">
+              <div className="grid grid-cols-1 gap-1">
+                {navigationItems.map((item) => {
+                  const Icon = item.icon
+                  return (
+                    <Button
+                      key={item.id}
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 text-xs justify-start"
+                      onClick={item.action}
+                    >
+                      <Icon size={14} className="mr-1 flex-shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                      {item.id === 'subscription' && subscription?.plan === 'basic' && (
+                        <Badge variant="secondary" className="ml-auto h-4 min-w-4 text-[10px] px-1 bg-blue-100 text-blue-600">
+                          Pro
+                        </Badge>
+                      )}
+                    </Button>
+                  )
+                })}
+              </div>
             </div>
           </div>
 

@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 
-// Mock useKV hook for persistent storage
+// Original useKV hook for backwards compatibility
 export function useKV<T>(key: string, defaultValue: T): [T, (value: T) => void] {
   const [value, setValue] = useState<T>(() => {
     try {

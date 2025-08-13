@@ -1,7 +1,11 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { useAuth } from '@/lib/auth'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
+import { CreditCard, SignOut } from '@phosphor-icons/react'
 import { 
   File, 
   Square, 
@@ -15,16 +19,50 @@ import {
   House
 } from '@/lib/safe-icons'
 
+type AppView = 'workspace' | 'profile'
+
 interface HeaderProps {
   documentsCount: number
   viewMode: 'grid' | 'list'
   onViewModeChange: (mode: 'grid' | 'list') => void
   aiCopilotReady?: boolean
+  onNavigate?: (view: AppView) => void
 }
 
-export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotReady = false }: HeaderProps) {
+export function Header({ 
+  documentsCount, 
+  viewMode, 
+  onViewModeChange, 
+  aiCopilotReady = false,
+  onNavigate 
+}: HeaderProps) {
+  const { user, subscription, logout } = useAuth()
   const { theme, toggleTheme } = useTheme()
   const { toggle, isMobile } = useSidebar()
+
+  const handleProfileClick = () => {
+    onNavigate?.('profile')
+  }
+
+  const handleWorkspaceClick = () => {
+    onNavigate?.('workspace')
+  }
+
+  const getUserInitials = () => {
+    if (!user?.name) return 'U'
+    const names = user.name.split(' ')
+    if (names.length === 1) return names[0].charAt(0).toUpperCase()
+    return (names[0].charAt(0) + names[names.length - 1].charAt(0)).toUpperCase()
+  }
+
+  const getPlanBadgeColor = () => {
+    if (!subscription) return 'bg-gray-100 text-gray-600'
+    switch (subscription.plan) {
+      case 'pro': return 'bg-blue-100 text-blue-600'
+      case 'enterprise': return 'bg-purple-100 text-purple-600'
+      default: return 'bg-gray-100 text-gray-600'
+    }
+  }
 
   return (
     <header className="flex items-center justify-between mb-6 sm:mb-8 lg:mb-10 p-4 sm:p-6 lg:p-8 bg-card rounded-xl lg:rounded-2xl border shadow-sm">
@@ -44,10 +82,15 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
             <Brain size={isMobile ? 20 : 28} className="text-primary-foreground" />
           </div>
           <div className="hidden sm:block">
-            <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              BRAINSAITبرينسايت
-            </h1>
-            <p className="text-muted-foreground text-xs lg:text-sm">AI-Powered Document Intelligence</p>
+            <button
+              onClick={handleWorkspaceClick}
+              className="text-left hover:opacity-80 transition-opacity"
+            >
+              <h1 className="text-lg sm:text-xl lg:text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                BRAINSAITبرينسايت
+              </h1>
+              <p className="text-muted-foreground text-xs lg:text-sm">AI-Powered Document Intelligence</p>
+            </button>
           </div>
         </div>
         
@@ -126,11 +169,53 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
           Settings
         </Button>
 
-        {/* User Profile */}
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3">
-          <User size={16} className={isMobile ? "" : "mr-2"} />
-          <span className="hidden sm:inline">Profile</span>
-        </Button>
+        {/* User Profile Dropdown */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm" className="h-8 gap-2 sm:h-auto sm:px-3">
+              <Avatar className="h-5 w-5 sm:h-6 sm:w-6">
+                <AvatarFallback className="text-xs font-medium">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="hidden sm:flex flex-col items-start">
+                <span className="text-sm font-medium leading-none">{user?.name}</span>
+                {subscription && (
+                  <Badge className={`text-xs mt-1 h-4 px-1 ${getPlanBadgeColor()}`}>
+                    {subscription.plan}
+                  </Badge>
+                )}
+              </div>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <div className="flex items-center justify-start gap-2 p-2">
+              <Avatar className="h-8 w-8">
+                <AvatarFallback className="text-sm font-medium">
+                  {getUserInitials()}
+                </AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col space-y-1 leading-none">
+                <p className="text-sm font-medium">{user?.name}</p>
+                <p className="text-xs text-muted-foreground">{user?.email}</p>
+              </div>
+            </div>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleProfileClick}>
+              <User className="mr-2 h-4 w-4" />
+              Profile Settings
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={handleProfileClick}>
+              <CreditCard className="mr-2 h-4 w-4" />
+              Subscription
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={logout} className="text-red-600">
+              <SignOut className="mr-2 h-4 w-4" />
+              Sign out
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   )

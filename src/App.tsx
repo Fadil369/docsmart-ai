@@ -6,7 +6,10 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
-import { useKV } from '@/lib/mock-spark'
+import { AuthModal } from '@/components/auth/AuthModal'
+import { ProfilePage } from '@/components/auth/ProfilePage'
+import { AuthProvider, useAuth } from '@/lib/auth'
+import { useUserKV } from '@/lib/user-storage'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
 import { motion } from 'framer-motion'
@@ -24,9 +27,13 @@ interface Document {
   progress?: number
 }
 
-function App() {
-  const [documents, setDocuments] = useKV<Document[]>('documents', [])
+type AppView = 'workspace' | 'profile'
+
+function AppContent() {
+  const { isAuthenticated, isLoading } = useAuth()
+  const [documents, setDocuments] = useUserKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [currentView, setCurrentView] = useState<AppView>('workspace')
   const [showLanding, setShowLanding] = useState(false) // Temporarily skip landing
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
@@ -53,8 +60,38 @@ function App() {
       }
     }
 
-    initializeAiCopilot()
-  }, [])
+    if (isAuthenticated && !isLoading) {
+      initializeAiCopilot()
+    }
+  }, [isAuthenticated, isLoading])
+
+  // Show auth modal if not authenticated
+  if (!isAuthenticated && !isLoading) {
+    return <AuthModal />
+  }
+
+  // Show loading spinner while checking auth
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+        />
+      </div>
+    )
+  }
+
+  // Show profile page
+  if (currentView === 'profile') {
+    return (
+      <div className="min-h-screen bg-background">
+        <ProfilePage />
+        <Toaster />
+      </div>
+    )
+  }
 
   const handleActionClick = async (actionId: string, files?: File[]) => {
     if (activeActions.includes(actionId)) return
@@ -179,7 +216,7 @@ function App() {
   return (
     <div className="min-h-screen bg-background flex">
       {/* Sidebar */}
-      <AppSidebar />
+      <AppSidebar onNavigate={setCurrentView} />
 
       {/* Main Content */}
       <div className={cn(
@@ -195,6 +232,7 @@ function App() {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             aiCopilotReady={aiCopilotReady}
+            onNavigate={setCurrentView}
           />
 
           {/* Enhanced Workspace Area */}
@@ -244,6 +282,14 @@ function App() {
       
       <Toaster />
     </div>
+  )
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   )
 }
 
