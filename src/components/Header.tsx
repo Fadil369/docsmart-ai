@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { useTheme } from '@/lib/theme'
 import { 
   FileText, 
   Grid3x3, 
@@ -7,7 +8,9 @@ import {
   Settings,
   Brain,
   Bell,
-  User
+  User,
+  Moon,
+  Sun
 } from '@phosphor-icons/react'
 
 interface HeaderProps {
@@ -17,6 +20,8 @@ interface HeaderProps {
 }
 
 export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderProps) {
+  const { theme, toggleTheme } = useTheme()
+
   return (
     <header className="flex items-center justify-between mb-8 p-6 bg-card rounded-2xl border">
       <div className="flex items-center gap-4">
@@ -41,6 +46,21 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
       </div>
 
       <div className="flex items-center gap-3">
+        {/* Theme Toggle */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={toggleTheme}
+          className="transition-all duration-200 hover:scale-105"
+        >
+          {theme === 'light' ? (
+            <Moon size={16} className="mr-2" />
+          ) : (
+            <Sun size={16} className="mr-2" />
+          )}
+          {theme === 'light' ? 'Dark' : 'Light'}
+        </Button>
+
         {/* View Mode Toggle */}
         <div className="flex items-center border rounded-lg p-1 bg-background">
           <Button

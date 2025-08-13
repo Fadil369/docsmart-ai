@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
+import { useTheme } from '@/lib/theme'
 import { 
   FileText, 
   Brain, 
@@ -21,7 +22,9 @@ import {
   Share,
   Copy,
   Download,
-  Language
+  Language,
+  Moon,
+  Sun
 } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -174,6 +177,7 @@ const translations = {
 export function LandingPage({ onGetStarted }: LandingPageProps) {
   const [language, setLanguage] = useState<Language>('en')
   const [hoveredFeature, setHoveredFeature] = useState<number | null>(null)
+  const { theme, toggleTheme } = useTheme()
   
   const t = translations[language]
   const isRTL = language === 'ar'
@@ -193,7 +197,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
 
   return (
     <div className={cn("min-h-screen bg-gradient-to-br from-background via-background to-accent/5", isRTL && "rtl")}>
-      {/* Header with Language Toggle */}
+      {/* Header with Language Toggle and Theme Toggle */}
       <header className="p-6">
         <div className="container mx-auto max-w-6xl flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -205,20 +209,37 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
             </span>
           </div>
           
-          {/* Language Toggle */}
-          <div className="flex items-center gap-3 p-3 bg-card rounded-xl border">
-            <Language size={20} className="text-muted-foreground" />
-            <span className={cn("text-sm font-medium", language === 'en' ? "text-primary" : "text-muted-foreground")}>
-              EN
-            </span>
-            <Switch
-              checked={language === 'ar'}
-              onCheckedChange={(checked) => setLanguage(checked ? 'ar' : 'en')}
-              className="data-[state=checked]:bg-primary"
-            />
-            <span className={cn("text-sm font-medium", language === 'ar' ? "text-primary" : "text-muted-foreground")}>
-              العربية
-            </span>
+          <div className="flex items-center gap-4">
+            {/* Theme Toggle */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={toggleTheme}
+              className="transition-all duration-200 hover:scale-105"
+            >
+              {theme === 'light' ? (
+                <Moon size={16} className="mr-2" />
+              ) : (
+                <Sun size={16} className="mr-2" />
+              )}
+              {theme === 'light' ? 'Dark' : 'Light'}
+            </Button>
+
+            {/* Language Toggle */}
+            <div className="flex items-center gap-3 p-3 bg-card rounded-xl border">
+              <Language size={20} className="text-muted-foreground" />
+              <span className={cn("text-sm font-medium", language === 'en' ? "text-primary" : "text-muted-foreground")}>
+                EN
+              </span>
+              <Switch
+                checked={language === 'ar'}
+                onCheckedChange={(checked) => setLanguage(checked ? 'ar' : 'en')}
+                className="data-[state=checked]:bg-primary"
+              />
+              <span className={cn("text-sm font-medium", language === 'ar' ? "text-primary" : "text-muted-foreground")}>
+                العربية
+              </span>
+            </div>
           </div>
         </div>
       </header>

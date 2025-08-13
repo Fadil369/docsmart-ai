@@ -7,6 +7,7 @@ import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
 import { useKV } from '@github/spark/hooks'
+import { useTheme } from '@/lib/theme'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
@@ -28,6 +29,9 @@ function App() {
   const [showLanding, setShowLanding] = useState(true)
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
+  
+  // Initialize theme on app load
+  useTheme()
 
   const handleActionClick = async (actionId: string, files?: File[]) => {
     if (activeActions.includes(actionId)) return
