@@ -63,11 +63,6 @@ export function SignupForm({ onToggleMode }: SignupFormProps) {
     setIsLoading(true)
 
     try {
-      await signup(formData.email, formData.password, formData.name)
-      
-      // Migrate any anonymous data to the new user account
-      const currentUser = localStorage.getItem('auth_session')
-      if (currentUser) {
       const signupResponse = await signup(formData.email, formData.password, formData.name)
       
       // Migrate any anonymous data to the new user account
