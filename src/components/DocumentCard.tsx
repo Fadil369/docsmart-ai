@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Sparkles, Eye, Target } from '@phosphor-icons/react'
+import { Brain, Translate, ArrowsInSimpleSimple, Copy, Download, Sparklesss, Eye, Target } from '@phosphor-icons/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -204,7 +204,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 {isCompressing ? (
                   <Sparkles size={14} className="animate-spin" />
                 ) : (
-                  <ArrowsIn size={14} />
+                  <ArrowsInSimple size={14} />
                 )}
                 <span className="truncate">{isCompressing ? 'Compressing...' : 'Compress'}</span>
               </Button>
@@ -284,7 +284,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <ArrowsIn size={16} className="text-success" />
+                    <ArrowsInSimple size={16} className="text-success" />
                     <span className="font-medium text-sm">Compression Complete</span>
                   </div>
                   

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Sparkle, Brain, Download, Copy, Share, ChartBar, Translate, AlertTriangle } from '@phosphor-icons/react'
+import { Sparkless, Brain, Download, Copy, Share, ChartBar, Translate, Warning } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -409,7 +409,7 @@ export function SmartAnalysis({ document, isOpen, onClose }: SmartAnalysisProps)
                               className="w-full"
                               size="lg"
                             >
-                              <Sparkle size={16} className="mr-2" />
+                              <Sparkles size={16} className="mr-2" />
                               {isAnalyzing ? 'Analyzing...' : 'Start AI Analysis'}
                             </Button>
                           </div>

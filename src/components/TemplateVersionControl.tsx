@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { GitBranch, Clock, Users, AlertTriangle, Check, X, ArrowRight, ArrowLeft, Merge, Plus } from '@phosphor-icons/react'
+import { GitFork, Clock, Users, Warning, Check, X, ArrowRight, ArrowLeft, MagnetStraight, Plus } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -190,7 +190,7 @@ export function TemplateVersionControl({ isOpen, onClose, templateId }: VersionC
       case 'property_changed': return <ArrowRight size={14} className="text-accent" />
       case 'feature_added': return <Plus size={14} className="text-success" />
       case 'feature_removed': return <X size={14} className="text-destructive" />
-      case 'prompt_modified': return <GitBranch size={14} className="text-primary" />
+      case 'prompt_modified': return <GitFork size={14} className="text-primary" />
       default: return <Clock size={14} className="text-muted-foreground" />
     }
   }
@@ -200,7 +200,7 @@ export function TemplateVersionControl({ isOpen, onClose, templateId }: VersionC
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <GitBranch className="text-primary" size={20} />
+            <GitFork className="text-primary" size={20} />
             Template Version Control
           </DialogTitle>
           <DialogDescription>
@@ -232,7 +232,7 @@ export function TemplateVersionControl({ isOpen, onClose, templateId }: VersionC
               <div className="flex gap-2">
                 {selectedVersions.length >= 2 && (
                   <Button variant="outline" onClick={handleMergeVersions}>
-                    <Merge size={14} className="mr-1" />
+                    <MagnetStraight size={14} className="mr-1" />
                     Merge Selected
                   </Button>
                 )}
@@ -308,7 +308,7 @@ export function TemplateVersionControl({ isOpen, onClose, templateId }: VersionC
               <TabsContent value="compare" className="h-full">
                 <div className="text-center py-12">
                   <div className="max-w-md mx-auto space-y-4">
-                    <GitBranch size={48} className="text-primary mx-auto" />
+                    <GitFork size={48} className="text-primary mx-auto" />
                     <h3 className="text-lg font-semibold">Version Comparison</h3>
                     <p className="text-muted-foreground text-sm">
                       Select versions from the history tab to compare changes
@@ -493,7 +493,7 @@ function ConflictCard({ conflict, index, onResolve, onViewDetails }: ConflictCar
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3">
-              <AlertTriangle size={20} className="text-destructive mt-1" />
+              <Warning size={20} className="text-destructive mt-1" />
               <div className="flex-1">
                 <CardTitle className="text-base">{conflict.conflictType.replace('_', ' ').toUpperCase()}</CardTitle>
                 <CardDescription className="text-sm">
@@ -531,7 +531,7 @@ function ConflictCard({ conflict, index, onResolve, onViewDetails }: ConflictCar
 
             <div className="flex gap-2">
               <Button size="sm" onClick={() => onResolve('merge')}>
-                <Merge size={14} className="mr-1" />
+                <MagnetStraight size={14} className="mr-1" />
                 Auto Merge
               </Button>
               <Button variant="outline" size="sm" onClick={onViewDetails}>

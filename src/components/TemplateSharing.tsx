@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Users, Share, Download, Upload, Copy, Globe, Lock, UserCheck, UserX, Crown, Plus, Send, Search, Filter, GitBranch, Clock } from '@phosphor-icons/react'
+import { Users, Share, Download, Upload, Copy, Globe, Lock, UserCheck, UserX, Crown, Plus, Send, Search, Filter, GitFork, Clock } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -495,13 +495,13 @@ export function TemplateSharing({ isOpen, onClose }: TemplateSharingProps) {
               <TabsContent value="versions" className="h-full">
                 <div className="text-center py-12">
                   <div className="max-w-md mx-auto space-y-4">
-                    <GitBranch size={48} className="text-primary mx-auto" />
+                    <GitFork size={48} className="text-primary mx-auto" />
                     <h3 className="text-lg font-semibold">Template Version Control</h3>
                     <p className="text-muted-foreground text-sm">
                       Manage template versions, track changes, and resolve conflicts
                     </p>
                     <Button onClick={() => setShowVersionControl(true)}>
-                      <GitBranch size={14} className="mr-1" />
+                      <GitFork size={14} className="mr-1" />
                       Open Version Control
                     </Button>
                   </div>
@@ -657,7 +657,7 @@ function SharedTemplateCard({ sharedTemplate, index, currentUser, onRate, showOw
                 setShowVersionControl(true)
               }}
             >
-              <GitBranch size={14} />
+              <GitFork size={14} />
             </Button>
           </div>
         </CardContent>

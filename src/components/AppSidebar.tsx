@@ -90,11 +90,11 @@ export function AppSidebar() {
   const getStatusIcon = (status: Document['status']) => {
     switch (status) {
       case 'processing':
-        return <Zap size={16} className="text-blue-500 animate-pulse" />
+        return <Lightning size={16} className="text-blue-500 animate-pulse" />
       case 'completed':
         return <CheckCircle size={16} className="text-green-500" />
       case 'error':
-        return <AlertCircle size={16} className="text-red-500" />
+        return <WarningCircle size={16} className="text-red-500" />
       case 'queued':
         return <Clock size={16} className="text-orange-500" />
       default:
@@ -107,9 +107,9 @@ export function AppSidebar() {
       case 'upload':
         return <FileText size={16} className="text-blue-500" />
       case 'process':
-        return <Zap size={16} className="text-purple-500" />
+        return <Lightning size={16} className="text-purple-500" />
       case 'share':
-        return <Share2 size={16} className="text-green-500" />
+        return <Share size={16} className="text-green-500" />
       case 'collaborate':
         return <Users size={16} className="text-orange-500" />
       case 'export':

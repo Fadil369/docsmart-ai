@@ -186,8 +186,8 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
     { icon: Upload, color: "bg-blue-500", title: "Upload", description: "Any document type, any size" },
     { icon: Brain, color: "bg-purple-500", title: "AI Analysis", description: "Powered by Copilot API" },
     { icon: Translate, color: "bg-green-500", title: "Translate", description: "AR ⇄ EN instantly" },
-    { icon: ArrowsIn, color: "bg-orange-500", title: "Compress", description: "Up to 70% reduction" },
-    { icon: Merge, color: "bg-indigo-500", title: "Merge", description: "Intelligent consolidation" },
+    { icon: ArrowsInSimple, color: "bg-orange-500", title: "Compress", description: "Up to 70% reduction" },
+    { icon: MagnetStraight, color: "bg-indigo-500", title: "Merge", description: "Intelligent consolidation" },
     { icon: Users, color: "bg-pink-500", title: "Collaborate", description: "Real-time teamwork" },
     { icon: FileText, color: "bg-yellow-500", title: "Templates", description: "Custom & reusable" },
     { icon: Share, color: "bg-cyan-500", title: "Share", description: "Seamless distribution" },
@@ -259,7 +259,7 @@ export function LandingPage({ onGetStarted }: LandingPageProps) {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20"
             >
-              <Sparkle size={16} className="text-primary" />
+              <Sparkles size={16} className="text-primary" />
               <span className="text-sm font-medium text-primary">{t.poweredBy}</span>
             </motion.div>
             

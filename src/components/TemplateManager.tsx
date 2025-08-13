@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Settings, Download, Upload, Plus, Trash2, Copy, Edit, Save, Star, StarOff } from '@phosphor-icons/react'
+import { Gear, Download, Upload, Plus, Trash, Copy, Edit, Save, Star, StarOff } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -163,7 +163,7 @@ export function TemplateManager({ isOpen, onClose }: TemplateManagerProps) {
       <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Settings className="text-primary" size={20} />
+            <Gear className="text-primary" size={20} />
             Template Manager
           </DialogTitle>
           <DialogDescription>
@@ -467,7 +467,7 @@ function PresetCard({ preset, index, onEdit, onDelete, onDuplicate, onToggleFavo
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10">
-                      <Trash2 size={14} />
+                      <Trash size={14} />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -555,7 +555,7 @@ function TemplateCard({ template, index, onEdit, onDelete }: TemplateCardProps) 
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="outline" size="sm" className="text-destructive hover:bg-destructive/10">
-                    <Trash2 size={14} />
+                    <Trash size={14} />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>

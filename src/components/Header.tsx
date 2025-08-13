@@ -4,9 +4,9 @@ import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
 import { 
   FileText, 
-  Grid3x3, 
+  GridNine, 
   List, 
-  Settings,
+  Gear,
   Brain,
   Bell,
   User,
@@ -87,7 +87,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
             onClick={() => onViewModeChange('grid')}
             className="h-7 w-7 p-0"
           >
-            <Grid3x3 size={14} />
+            <GridNine size={14} />
           </Button>
           <Button
             variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -107,7 +107,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
         
         {/* Settings - Hidden on small screens */}
         <Button variant="outline" size="sm" className="hidden lg:flex">
-          <Settings size={16} className="mr-2" />
+          <Gear size={16} className="mr-2" />
           Settings
         </Button>
 

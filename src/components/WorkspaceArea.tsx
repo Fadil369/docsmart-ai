@@ -6,18 +6,18 @@ import { Badge } from '@/components/ui/badge'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Upload, 
-  Languages, 
-  Zap, 
+  Translate, 
+  Lightning, 
   Merge, 
-  BarChart3, 
+  ChartBar, 
   Brain, 
-  Share2, 
+  Share, 
   Users, 
   FileText, 
   Copy, 
   Download,
-  FileUp,
-  Loader2
+  ArrowUp,
+  CircleNotch
 } from '@phosphor-icons/react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -64,28 +64,28 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
     {
       id: 'translate',
       label: 'Translate',
-      icon: Languages,
+      icon: Translate,
       description: 'AR ⇄ EN translation',
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
       id: 'compress',
       label: 'Compress',
-      icon: Zap,
+      icon: Lightning,
       description: 'Reduce file size smartly',
       color: 'bg-orange-500 hover:bg-orange-600'
     },
     {
       id: 'merge',
       label: 'Merge & Consolidate',
-      icon: Merge,
+      icon: MagnetStraight,
       description: 'Combine multiple documents',
       color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
       id: 'analyze',
       label: 'Analyze',
-      icon: BarChart3,
+      icon: ChartBar,
       description: 'Extract insights & data',
       color: 'bg-indigo-500 hover:bg-indigo-600'
     },
@@ -99,7 +99,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
     {
       id: 'share',
       label: 'Share',
-      icon: Share2,
+      icon: Share,
       description: 'Share with team members',
       color: 'bg-cyan-500 hover:bg-cyan-600'
     },
@@ -203,7 +203,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
             animate={dragActive ? { scale: 1.1 } : { scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <FileUp size={isMobile ? 32 : 48} className="mx-auto text-primary" />
+            <ArrowUp size={isMobile ? 32 : 48} className="mx-auto text-primary" />
           </motion.div>
           
           <div className="space-y-1 sm:space-y-2">
@@ -299,7 +299,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
                               animate={{ rotate: 360 }}
                               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                             >
-                              <Loader2 size={24} className="text-primary" />
+                              <CircleNotch size={24} className="text-primary" />
                             </motion.div>
                           ) : (
                             <Icon size={24} className="text-foreground" />

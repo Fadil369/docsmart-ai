@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { motion } from 'framer-motion'
 import { useKV } from '@github/spark/hooks'
-import { FileText, Target, Brain, Building, Table, Settings, Trash2, Plus } from '@phosphor-icons/react'
+import { FileText, Target, Brain, Building, Table, Gear, Trash, Plus } from '@phosphor-icons/react'
 import { toast } from 'sonner'
 
 interface AnalysisTemplate {
@@ -264,7 +264,7 @@ function TemplateCard({ template, isSelected, onSelect, onEdit, onDelete, index 
                       onEdit()
                     }}
                   >
-                    <Settings size={14} />
+                    <Gear size={14} />
                   </Button>
                 )}
                 {onDelete && (
@@ -276,7 +276,7 @@ function TemplateCard({ template, isSelected, onSelect, onEdit, onDelete, index 
                       onDelete()
                     }}
                   >
-                    <Trash2 size={14} />
+                    <Trash size={14} />
                   </Button>
                 )}
               </div>

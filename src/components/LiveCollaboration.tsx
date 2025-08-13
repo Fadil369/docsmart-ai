@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Users, Eye, Edit, Clock, Zap, MessageCircle, Bell, Check } from '@phosphor-icons/react'
+import { Users, Eye, Edit, Clock, Lightning, MessageCircle, Bell, Check } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -106,7 +106,7 @@ export function LiveCollaboration({ className }: LiveCollaborationProps) {
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case 'template_created': return <Zap size={14} className="text-accent" />
+      case 'template_created': return <Lightning size={14} className="text-accent" />
       case 'template_shared': return <Users size={14} className="text-primary" />
       case 'template_used': return <Eye size={14} className="text-success" />
       case 'template_rated': return <span className="text-yellow-500">★</span>
@@ -140,7 +140,7 @@ export function LiveCollaboration({ className }: LiveCollaborationProps) {
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="flex items-center gap-2">
-                    <Zap className="text-primary" size={20} />
+                    <Lightning className="text-primary" size={20} />
                     Live Activity Feed
                   </CardTitle>
                   <CardDescription>
