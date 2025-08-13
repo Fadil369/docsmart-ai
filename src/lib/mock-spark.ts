@@ -27,9 +27,10 @@ export function useKV<T>(key: string, defaultValue: T): [T, (value: T) => void] 
 
 // Mock Spark LLM functionality
 declare global {
+  // eslint-disable-next-line no-var
   var spark: {
     llm: (prompt: string, model?: string, json?: boolean) => Promise<string>;
-    llmPrompt: (strings: TemplateStringsArray, ...values: any[]) => string;
+    llmPrompt: (strings: TemplateStringsArray, ...values: unknown[]) => string;
   };
 }
 
@@ -100,7 +101,7 @@ globalThis.spark = {
     return "This is a mock AI response. The system is working correctly and would provide detailed analysis and insights in a production environment.";
   },
 
-  llmPrompt: (strings: TemplateStringsArray, ...values: any[]) => {
+  llmPrompt: (strings: TemplateStringsArray, ...values: unknown[]) => {
     return strings.reduce((result, string, i) => {
       return result + string + (values[i] || '');
     }, '');

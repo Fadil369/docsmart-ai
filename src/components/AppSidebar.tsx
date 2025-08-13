@@ -6,21 +6,19 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Progress } from '@/components/ui/progress'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   File, 
   Circle, 
   Users, 
   Bell, 
   House,
-  Eye,
   Download,
   Share,
   House as MoreHorizontal,
   Circle as Activity,
   Lightning,
   Circle as CheckCircle,
-  AlertCircle,
-  Circle as X
+  AlertCircle
 } from '@/lib/safe-icons'
 import { CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -215,7 +213,7 @@ export function AppSidebar() {
                     variant={activeTab === tab.id ? "default" : "ghost"}
                     size="sm"
                     className="relative h-8 text-xs justify-start"
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id as 'home' | 'documents' | 'analytics')}
                   >
                     <Icon size={14} className="mr-1 flex-shrink-0" />
                     <span className="truncate">{tab.label}</span>
