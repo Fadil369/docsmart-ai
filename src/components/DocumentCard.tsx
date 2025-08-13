@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Translate, ArrowsIn, Eye, Target } from '@phosphor-icons/react'
+import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Eye, Target, Star } from '@phosphor-icons/react'
 import { Sparkles } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'

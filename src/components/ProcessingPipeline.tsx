@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Sparkles, ArrowRight, CheckCircle } from '@phosphor-icons/react'
+import { Star, ArrowRight, CheckCircle } from '@phosphor-icons/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -45,7 +45,7 @@ function ProcessingStage({ title, description, icon, isActive, isComplete, progr
       
       <div className="flex items-center">
         {isActive && (
-          <Sparkles size={20} className="text-primary animate-pulse" />
+          <Star size={20} className="text-primary animate-pulse" />
         )}
         {isComplete && (
           <CheckCircle size={20} className="text-success" />
@@ -82,7 +82,7 @@ export function ProcessingPipeline({ documentName, currentStage, stages, onCompl
       <Card className="w-full max-w-2xl max-h-[80vh] overflow-y-auto">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles size={24} className="text-primary" />
+            <Star size={24} className="text-primary" />
             Processing Document
           </CardTitle>
           <CardDescription>
