@@ -14,15 +14,17 @@ import {
   Sun,
   House
 } from '@/lib/safe-icons'
+import { CreditCard } from 'lucide-react'
 
 interface HeaderProps {
   documentsCount: number
   viewMode: 'grid' | 'list'
   onViewModeChange: (mode: 'grid' | 'list') => void
   aiCopilotReady?: boolean
+  onPaymentsClick?: () => void
 }
 
-export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotReady = false }: HeaderProps) {
+export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotReady = false, onPaymentsClick }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
   const { toggle, isMobile } = useSidebar()
 
@@ -119,6 +121,19 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
           <Bell size={16} />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </Button>
+
+        {/* Payments - New */}
+        {onPaymentsClick && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onPaymentsClick}
+            className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <CreditCard size={16} className={isMobile ? "" : "mr-2"} />
+            <span className="hidden sm:inline">Upgrade</span>
+          </Button>
+        )}
         
         {/* Settings - Hidden on small screens */}
         <Button variant="outline" size="sm" className="hidden lg:flex">
