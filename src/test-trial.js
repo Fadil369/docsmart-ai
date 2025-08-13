@@ -35,7 +35,30 @@ const testTrial = async () => {
   // Test analytics tracking
   if (typeof trackTrialEvent !== 'undefined') {
     trackTrialEvent('trial_start', { test: true })
-    trackFeatureUsage('upload', { test: true })
+  if (typeof trialDebug !== 'undefined' && typeof trialDebug.resetTrial === 'function') {
+    trialDebug.resetTrial()
+  }
+  
+  // Initialize new trial
+  if (typeof trialDebug !== 'undefined' && typeof trialDebug.getOrCreateTrial === 'function') {
+    const trial = trialDebug.getOrCreateTrial()
+    console.log('Trial created:', trial)
+    
+    // Test trial status
+    const status = trialDebug.getTrialStatus()
+    console.log('Trial status:', status)
+    
+    // Test access check
+    const hasAccess = trialDebug.hasGatedAccess()
+    console.log('Has gated access:', hasAccess)
+  }
+  
+  console.log('2. Testing analytics...')
+  
+  // Test analytics tracking
+  if (typeof trialDebug !== 'undefined' && typeof trialDebug.trackTrialEvent === 'function') {
+    trialDebug.trackTrialEvent('trial_start', { test: true })
+    trialDebug.trackFeatureUsage('upload', { test: true })
   }
   
   console.log('3. Check localStorage...')
