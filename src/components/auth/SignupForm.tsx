@@ -66,7 +66,7 @@ export function SignupForm({ onToggleMode }: SignupFormProps) {
       await signup(formData.email, formData.password, formData.name)
       
       // Migrate any anonymous data to the new user account
-      const currentUser = JSON.parse(localStorage.getItem('auth_session') || '""')
+      const currentUser = localStorage.getItem('auth_session')
       if (currentUser) {
         migrateAnonymousData(currentUser)
       }
