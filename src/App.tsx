@@ -8,6 +8,7 @@ import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
 import { useKV } from '@github/spark/hooks'
 import { useTheme } from '@/lib/theme'
+import { useSidebar } from '@/lib/use-sidebar'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
@@ -30,8 +31,9 @@ function App() {
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   
-  // Initialize theme on app load
+  // Initialize theme and sidebar on app load
   useTheme()
+  const { isOpen, isMobile } = useSidebar()
 
   const handleActionClick = async (actionId: string, files?: File[]) => {
     if (activeActions.includes(actionId)) return
@@ -159,53 +161,58 @@ function App() {
       <AppSidebar />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-6">
+      <div className={cn(
+        "flex-1 flex flex-col transition-all duration-300",
+        // Add left margin on desktop when sidebar is closed
+        !isMobile && !isOpen && "ml-0",
+        // Ensure proper spacing on mobile
+        isMobile && "w-full"
+      )}>
+        <div className="flex-1 p-3 sm:p-4 lg:p-6 space-y-4 sm:space-y-6 lg:space-y-8">
           <Header 
             documentsCount={documents.length}
             viewMode={viewMode}
             onViewModeChange={setViewMode}
           />
 
-          <div className="space-y-8">
-            {/* Enhanced Workspace Area */}
-            <WorkspaceArea 
-              onActionClick={handleActionClick}
-              activeActions={activeActions}
-              actionProgress={actionProgress}
-            />
+          {/* Enhanced Workspace Area */}
+          <WorkspaceArea 
+            onActionClick={handleActionClick}
+            activeActions={activeActions}
+            actionProgress={actionProgress}
+          />
 
-            {/* Documents Grid */}
-            {documents.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-2">Recent Documents</h3>
-                  <p className="text-sm text-muted-foreground">
-                    {documents.length} document{documents.length !== 1 ? 's' : ''} in your workspace
-                  </p>
-                </div>
-                
-                <div className={cn(
-                  "gap-6",
-                  viewMode === 'grid' 
-                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
-                    : "flex flex-col space-y-4"
-                )}>
-                  {documents.map((document, index) => (
-                    <DocumentCard
-                      key={document.id}
-                      document={document}
-                      index={index}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </div>
+          {/* Documents Grid */}
+          {documents.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+              className="space-y-4 sm:space-y-6"
+            >
+              <div className="space-y-2">
+                <h3 className="text-lg font-semibold">Recent Documents</h3>
+                <p className="text-sm text-muted-foreground">
+                  {documents.length} document{documents.length !== 1 ? 's' : ''} in your workspace
+                </p>
+              </div>
+              
+              <div className={cn(
+                "gap-3 sm:gap-4 lg:gap-6",
+                viewMode === 'grid' 
+                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                  : "flex flex-col space-y-3 sm:space-y-4"
+              )}>
+                {documents.map((document, index) => (
+                  <DocumentCard
+                    key={document.id}
+                    document={document}
+                    index={index}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
         
         {/* Footer */}

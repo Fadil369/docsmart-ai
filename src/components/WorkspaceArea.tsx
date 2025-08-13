@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -41,6 +41,17 @@ interface WorkspaceAreaProps {
 export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: WorkspaceAreaProps) {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640)
+    }
+
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const workspaceActions: WorkspaceAction[] = [
     {
@@ -177,7 +188,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className={cn(
-          "relative border-2 border-dashed rounded-2xl p-8 transition-all duration-300",
+          "relative border-2 border-dashed rounded-xl lg:rounded-2xl p-4 sm:p-6 lg:p-8 transition-all duration-300",
           dragActive 
             ? "border-primary bg-primary/5 scale-[1.02]" 
             : "border-border hover:border-primary/50 hover:bg-accent/20"
@@ -187,24 +198,24 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
         onDragOver={handleDragOver}
         onDrop={handleDrop}
       >
-        <div className="text-center space-y-4">
+        <div className="text-center space-y-3 sm:space-y-4">
           <motion.div
             animate={dragActive ? { scale: 1.1 } : { scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <FileUp size={48} className="mx-auto text-primary" />
+            <FileUp size={isMobile ? 32 : 48} className="mx-auto text-primary" />
           </motion.div>
           
-          <div className="space-y-2">
-            <h3 className="text-xl font-semibold">
+          <div className="space-y-1 sm:space-y-2">
+            <h3 className="text-lg sm:text-xl font-semibold">
               {dragActive ? 'Drop files here!' : 'Drag & Drop Any Document'}
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground px-2">
               Supports PDF, Excel, Word, PowerPoint, Images, and more
             </p>
           </div>
 
-          <div className="flex items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <input
               type="file"
               multiple
@@ -213,9 +224,9 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
               className="hidden"
               id="file-upload"
             />
-            <label htmlFor="file-upload">
-              <Button size="lg" className="cursor-pointer">
-                <Upload className="mr-2" />
+            <label htmlFor="file-upload" className="w-full sm:w-auto">
+              <Button size="lg" className="cursor-pointer w-full sm:w-auto">
+                <Upload className="mr-2" size={16} />
                 Choose Files
               </Button>
             </label>
@@ -235,16 +246,16 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <Card className="p-6">
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-2xl font-bold">AI-Powered Workspace</h2>
-              <p className="text-muted-foreground">
+        <Card className="p-3 sm:p-4 lg:p-6">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="text-center space-y-1 sm:space-y-2">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">AI-Powered Workspace</h2>
+              <p className="text-sm sm:text-base text-muted-foreground px-2">
                 Transform your documents with intelligent processing tools
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
               <AnimatePresence>
                 {workspaceActions.map((action, index) => {
                   const isActive = activeActions.includes(action.id)
@@ -264,8 +275,8 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
                         variant="outline"
                         size="lg"
                         className={cn(
-                          "h-auto p-4 flex flex-col items-center gap-3 relative overflow-hidden",
-                          "hover:shadow-lg transition-all duration-300",
+                          "h-auto p-3 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 relative overflow-hidden text-xs sm:text-sm",
+                          "hover:shadow-lg transition-all duration-300 min-h-[80px] sm:min-h-[100px]",
                           isActive && "ring-2 ring-primary"
                         )}
                         onClick={() => handleActionClick(action.id)}

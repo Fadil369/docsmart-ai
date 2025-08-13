@@ -134,34 +134,34 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
         transition={{ duration: 0.3, delay: index * 0.1 }}
       >
         <Card className="hover:shadow-lg transition-all duration-200 hover:shadow-primary/5">
-          <CardHeader className="pb-3">
-            <div className="flex items-start gap-3">
-              <span className="text-3xl">{getFileTypeIcon(document.type)}</span>
+          <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-4 lg:p-6">
+            <div className="flex items-start gap-2 sm:gap-3">
+              <span className="text-2xl sm:text-3xl flex-shrink-0">{getFileTypeIcon(document.type)}</span>
               
               <div className="flex-1 min-w-0">
-                <CardTitle className="text-lg truncate">{document.name}</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-sm sm:text-base lg:text-lg truncate leading-tight">{document.name}</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   {formatFileSize(document.size)} • {document.type.includes('pdf') ? 'PDF Document' : 'Excel Spreadsheet'}
                 </CardDescription>
               </div>
               
-              <Badge variant="outline" className="bg-success/10 text-success border-success/20">
+              <Badge variant="outline" className="bg-success/10 text-success border-success/20 text-xs flex-shrink-0">
                 {document.status}
               </Badge>
             </div>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3 sm:space-y-4 p-3 sm:p-4 lg:p-6 pt-0">
             {/* Action Buttons */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setShowSmartAnalysis(true)}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
-                <Target size={16} />
-                Smart Analysis
+                <Target size={14} />
+                <span className="truncate">Smart Analysis</span>
               </Button>
 
               <Button
@@ -169,14 +169,14 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 size="sm"
                 onClick={handleAnalyze}
                 disabled={isAnalyzing}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isAnalyzing ? (
-                  <Sparkles size={16} className="animate-spin" />
+                  <Sparkles size={14} className="animate-spin" />
                 ) : (
-                  <Brain size={16} />
+                  <Brain size={14} />
                 )}
-                {isAnalyzing ? 'Analyzing...' : 'Quick AI'}
+                <span className="truncate">{isAnalyzing ? 'Analyzing...' : 'Quick AI'}</span>
               </Button>
 
               <Button
@@ -184,14 +184,14 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 size="sm"
                 onClick={handleTranslate}
                 disabled={isTranslating}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isTranslating ? (
-                  <Sparkles size={16} className="animate-spin" />
+                  <Sparkles size={14} className="animate-spin" />
                 ) : (
-                  <Translate size={16} />
+                  <Translate size={14} />
                 )}
-                {isTranslating ? 'Translating...' : 'Translate'}
+                <span className="truncate">{isTranslating ? 'Translating...' : 'Translate'}</span>
               </Button>
 
               <Button
@@ -199,14 +199,14 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 size="sm"
                 onClick={handleCompress}
                 disabled={isCompressing}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isCompressing ? (
-                  <Sparkles size={16} className="animate-spin" />
+                  <Sparkles size={14} className="animate-spin" />
                 ) : (
-                  <ArrowsIn size={16} />
+                  <ArrowsIn size={14} />
                 )}
-                {isCompressing ? 'Compressing...' : 'Compress'}
+                <span className="truncate">{isCompressing ? 'Compressing...' : 'Compress'}</span>
               </Button>
             </div>
 
