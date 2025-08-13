@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Eye, Target, Star } from '@phosphor-icons/react'
+import { Sparkles } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -79,7 +80,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
       await setAnalysis(analysisResult)
       setIsAnalyzing(false)
       toast.success('Analysis framework ready for production use')
-    } catch (error) {
+    } catch (_error) {
       setIsAnalyzing(false)
       toast.error('Analysis setup failed')
     }
@@ -94,7 +95,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
       
       setIsTranslating(false)
       toast.success('Translation framework ready for production use')
-    } catch (error) {
+    } catch (_error) {
       setIsTranslating(false)
       toast.error('Translation setup failed')
     }
@@ -114,7 +115,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
       setCompressionResult({ originalSize, compressedSize })
       setIsCompressing(false)
       toast.success('Compression framework ready for production use')
-    } catch (error) {
+    } catch (_error) {
       setIsCompressing(false)
       toast.error('Compression setup failed')
     }
@@ -172,7 +173,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isAnalyzing ? (
-                  <Star size={14} className="animate-spin" />
+                  <Sparkles size={14} className="animate-spin" />
                 ) : (
                   <Brain size={14} />
                 )}
@@ -187,7 +188,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isTranslating ? (
-                  <Star size={14} className="animate-spin" />
+                  <Sparkles size={14} className="animate-spin" />
                 ) : (
                   <Translate size={14} />
                 )}
@@ -202,7 +203,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isCompressing ? (
-                  <Star size={14} className="animate-spin" />
+                  <Sparkles size={14} className="animate-spin" />
                 ) : (
                   <ArrowsIn size={14} />
                 )}

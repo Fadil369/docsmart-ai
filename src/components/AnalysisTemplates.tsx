@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { motion } from 'framer-motion'
 import { useKV } from '@/lib/mock-spark'
 import { FileText, Plus } from '@phosphor-icons/react'
+import { Settings, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface AnalysisTemplate {
@@ -18,7 +19,7 @@ interface AnalysisTemplate {
   name: string
   description: string
   documentTypes: string[]
-  icon: any
+  icon: React.ComponentType
   color: string
   prompts: {
     summary: string

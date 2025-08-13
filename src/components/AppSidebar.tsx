@@ -6,25 +6,25 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Progress } from '@/components/ui/progress'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   File, 
   Circle, 
   Users, 
   Bell, 
   House,
-  Eye,
   Download,
   Share,
   House as MoreHorizontal,
   Circle as Activity,
   Lightning,
   Circle as CheckCircle,
-  AlertCircle,
-  Circle as X
+  AlertCircle
 } from '@/lib/safe-icons'
+import { CreditCard } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useKV } from '@/lib/mock-spark'
 import { useSidebar } from '@/lib/use-sidebar'
+import { BillingStatus } from '@/components/payment'
 
 interface Document {
   id: string
@@ -143,6 +143,7 @@ export function AppSidebar() {
     { id: 'documents', label: 'Documents', icon: File, count: documents.length },
     { id: 'activity', label: 'Activity', icon: Activity, count: activities.length },
     { id: 'team', label: 'Team', icon: Users, count: teamMembers.filter(m => m.status === 'online').length },
+    { id: 'billing', label: 'Billing', icon: CreditCard, count: 0 },
     { id: 'drive', label: 'Drive', icon: House, count: 0 },
     { id: 'notifications', label: 'Alerts', icon: Bell, count: notifications.filter(n => !n.read).length }
   ]
@@ -212,7 +213,7 @@ export function AppSidebar() {
                     variant={activeTab === tab.id ? "default" : "ghost"}
                     size="sm"
                     className="relative h-8 text-xs justify-start"
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id as 'home' | 'documents' | 'analytics')}
                   >
                     <Icon size={14} className="mr-1 flex-shrink-0" />
                     <span className="truncate">{tab.label}</span>
@@ -376,6 +377,25 @@ export function AppSidebar() {
                         </div>
                       ))
                     )}
+                  </motion.div>
+                )}
+
+                {/* Billing Status */}
+                {activeTab === 'billing' && (
+                  <motion.div
+                    key="billing"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-3"
+                  >
+                    <h3 className="font-medium text-sm text-muted-foreground mb-3">
+                      Billing & Subscriptions
+                    </h3>
+                    <div className="space-y-3">
+                      <BillingStatus />
+                    </div>
                   </motion.div>
                 )}
 

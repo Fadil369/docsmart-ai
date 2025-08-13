@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
 import { useTheme } from '@/lib/theme'
 import { 
@@ -9,9 +8,7 @@ import {
   Brain, 
   Globe, 
   ArrowsIn, 
-  Circle as Shield, 
   Lightning, 
-  Globe as ChartLine,
   Users,
   Circle as Sparkle,
   Circle as ArrowRight,

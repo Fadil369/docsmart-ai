@@ -1,7 +1,9 @@
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
+import { User as UserType } from '@/contexts/AuthContext'
 import { 
   File, 
   Square, 
@@ -14,17 +16,42 @@ import {
   Sun,
   House
 } from '@/lib/safe-icons'
+import { CreditCard, LogIn } from 'lucide-react'
 
 interface HeaderProps {
   documentsCount: number
   viewMode: 'grid' | 'list'
   onViewModeChange: (mode: 'grid' | 'list') => void
   aiCopilotReady?: boolean
+  onPaymentsClick?: () => void
+  onAuthClick?: () => void
+  onProfileClick?: () => void
+  isAuthenticated?: boolean
+  user?: UserType | null
 }
 
-export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotReady = false }: HeaderProps) {
+export function Header({ 
+  documentsCount, 
+  viewMode, 
+  onViewModeChange, 
+  aiCopilotReady = false, 
+  onPaymentsClick,
+  onAuthClick,
+  onProfileClick,
+  isAuthenticated = false,
+  user
+}: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
   const { toggle, isMobile } = useSidebar()
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   return (
     <header className="flex items-center justify-between mb-6 sm:mb-8 lg:mb-10 p-4 sm:p-6 lg:p-8 bg-card rounded-xl lg:rounded-2xl border shadow-sm">
@@ -119,6 +146,19 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
           <Bell size={16} />
           <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
         </Button>
+
+        {/* Payments - New */}
+        {onPaymentsClick && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onPaymentsClick}
+            className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <CreditCard size={16} className={isMobile ? "" : "mr-2"} />
+            <span className="hidden sm:inline">Upgrade</span>
+          </Button>
+        )}
         
         {/* Settings - Hidden on small screens */}
         <Button variant="outline" size="sm" className="hidden lg:flex">
@@ -126,11 +166,33 @@ export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotRe
           Settings
         </Button>
 
-        {/* User Profile */}
-        <Button variant="outline" size="sm" className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3">
-          <User size={16} className={isMobile ? "" : "mr-2"} />
-          <span className="hidden sm:inline">Profile</span>
-        </Button>
+        {/* Authentication Section */}
+        {isAuthenticated && user ? (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onProfileClick}
+            className="h-8 gap-2 sm:h-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <Avatar className="h-6 w-6">
+              <AvatarImage src={user.avatar} alt={user.name} />
+              <AvatarFallback className="text-xs">
+                {getInitials(user.name)}
+              </AvatarFallback>
+            </Avatar>
+            <span className="hidden sm:inline">{user.name}</span>
+          </Button>
+        ) : (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onAuthClick}
+            className="h-8 w-8 p-0 sm:h-auto sm:w-auto sm:px-3 transition-all duration-200 hover:scale-105"
+          >
+            <LogIn size={16} className={isMobile ? "" : "mr-2"} />
+            <span className="hidden sm:inline">Sign In</span>
+          </Button>
+        )}
       </div>
     </header>
   )

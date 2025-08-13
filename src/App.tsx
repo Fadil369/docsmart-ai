@@ -6,6 +6,7 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
+<<<<<<< HEAD
 import { PaymentPage } from '@/components/PaymentPage'
 import { TrialCountdown } from '@/components/TrialCountdown'
 import { useKV } from '@/lib/mock-spark'
@@ -13,6 +14,16 @@ import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
 import { getOrCreateTrial, getTrialStatus, hasGatedAccess, endTrial, resetTrial } from '@/lib/user-trial'
 import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
+=======
+import { AuthModal } from '@/components/auth/AuthModal'
+import { UserProfile } from '@/components/auth/UserProfile'
+import { PaymentSession } from '@/types/payment'
+import { PaymentPage } from '@/components/payment'
+import { useKV } from '@/lib/mock-spark'
+import { useTheme } from '@/lib/theme'
+import { useSidebar } from '@/lib/use-sidebar'
+import { useAuth } from '@/contexts/AuthContext'
+>>>>>>> main
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
@@ -29,10 +40,17 @@ interface Document {
 }
 
 function App() {
+  const { isAuthenticated, user } = useAuth()
   const [documents, setDocuments] = useKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showLanding, setShowLanding] = useState(false) // Temporarily skip landing
+<<<<<<< HEAD
   const [currentPage, setCurrentPage] = useState<'app' | 'payment'>('app')
+=======
+  const [showAuth, setShowAuth] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
+  const [showPayments, setShowPayments] = useState(false) // New payment page state
+>>>>>>> main
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   const [aiCopilotReady, setAiCopilotReady] = useState(false)
@@ -159,8 +177,10 @@ function App() {
       setTimeout(() => {
         setActiveActions(prev => prev.filter(id => id !== actionId))
         setActionProgress(prev => {
-          const { [actionId]: _removed, ...rest } = prev
-          return rest
+          // Remove the completed action
+          const newProgress = { ...prev }
+          delete newProgress[actionId]
+          return newProgress
         })
       }, 1000)
     }
@@ -208,6 +228,48 @@ function App() {
 
   const handleGetStarted = () => {
     setShowLanding(false)
+    if (!isAuthenticated) {
+      setShowAuth(true)
+    }
+  }
+
+  const handleAuthClose = () => {
+    setShowAuth(false)
+  }
+
+  const handleProfileClose = () => {
+    setShowProfile(false)
+  }
+
+  const handleProfileClick = () => {
+    setShowProfile(true)
+  }
+
+  const handlePaymentsClick = () => {
+    setShowPayments(true)
+  }
+
+  const handlePaymentsClose = () => {
+    setShowPayments(false)
+  }
+
+  const handlePaymentSuccess = (_session: PaymentSession) => {
+    toast.success('Payment successful!', {
+      description: 'Your access has been activated.'
+    })
+    setShowPayments(false)
+  }
+
+  if (showPayments) {
+    return (
+      <>
+        <PaymentPage 
+          onClose={handlePaymentsClose}
+          onSuccess={handlePaymentSuccess}
+        />
+        <Toaster />
+      </>
+    )
   }
 
   const handleBackToApp = () => {
@@ -253,6 +315,11 @@ function App() {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             aiCopilotReady={aiCopilotReady}
+            onPaymentsClick={handlePaymentsClick}
+            onAuthClick={() => setShowAuth(true)}
+            onProfileClick={handleProfileClick}
+            isAuthenticated={isAuthenticated}
+            user={user}
           />
 
           {/* Trial Countdown */}
@@ -304,6 +371,15 @@ function App() {
         {/* Footer */}
         <Footer />
       </div>
+      
+      {/* Modals */}
+      {showAuth && (
+        <AuthModal onClose={handleAuthClose} />
+      )}
+      
+      {showProfile && (
+        <UserProfile onClose={handleProfileClose} />
+      )}
       
       <Toaster />
     </div>
