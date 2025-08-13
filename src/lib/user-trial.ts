@@ -172,7 +172,7 @@ function checkAndEmitTrialMilestones(trial: TrialData): void {
  * Generate a simple user ID
  */
 function generateUserId(): string {
-  return 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+  return 'user_' + Math.random().toString(36).slice(2, 11) + '_' + Date.now();
 }
 
 /**
