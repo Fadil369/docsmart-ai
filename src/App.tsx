@@ -6,6 +6,7 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
+import { PaymentSession } from '@/types/payment'
 import { PaymentPage } from '@/components/payment'
 import { useKV } from '@/lib/mock-spark'
 import { useTheme } from '@/lib/theme'
@@ -118,7 +119,7 @@ function App() {
       setTimeout(() => {
         setActiveActions(prev => prev.filter(id => id !== actionId))
         setActionProgress(prev => {
-          const { [actionId]: _removed, ...rest } = prev
+          const { [actionId]: _, ...rest } = prev
           return rest
         })
       }, 1000)
@@ -177,7 +178,7 @@ function App() {
     setShowPayments(false)
   }
 
-  const handlePaymentSuccess = (session: any) => {
+  const handlePaymentSuccess = (session: PaymentSession) => {
     toast.success('Payment successful!', {
       description: 'Your access has been activated.'
     })

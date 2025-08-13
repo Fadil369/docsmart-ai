@@ -32,7 +32,7 @@ export interface PaymentSession {
   paymentMethod: string
   createdAt: Date
   updatedAt: Date
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface Entitlement {
@@ -45,14 +45,14 @@ export interface Entitlement {
   startDate: Date
   endDate?: Date
   features: string[]
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface PaymentEvent {
   id: string
   sessionId: string
   type: 'payment.created' | 'payment.succeeded' | 'payment.failed' | 'subscription.created' | 'subscription.updated' | 'subscription.canceled' | 'entitlement.granted' | 'entitlement.revoked'
-  data: Record<string, any>
+  data: Record<string, unknown>
   createdAt: Date
   processed: boolean
 }
@@ -70,7 +70,7 @@ export interface PaymentError {
   code: string
   message: string
   type: 'validation' | 'payment' | 'network' | 'configuration'
-  details?: Record<string, any>
+  details?: Record<string, unknown>
 }
 
 // SAR Currency formatting

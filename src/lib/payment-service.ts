@@ -11,7 +11,6 @@ import {
 
 // Mock configuration - in production these would come from environment variables
 const STRIPE_PUBLIC_KEY = 'pk_test_mock' // Replace with actual Stripe public key
-const PAYPAL_CLIENT_ID = 'mock_paypal_client_id' // Replace with actual PayPal client ID
 
 class PaymentService {
   private stripe: Stripe | null = null
@@ -83,7 +82,7 @@ class PaymentService {
   }
 
   // Process Stripe payment
-  async processStripePayment(sessionId: string, paymentMethodId: string): Promise<PaymentSession> {
+  async processStripePayment(sessionId: string, _paymentMethodId: string): Promise<PaymentSession> {
     const session = this.getPaymentSession(sessionId)
     if (!session) {
       throw new PaymentError({
@@ -362,7 +361,7 @@ class PaymentService {
     return stored ? JSON.parse(stored) : []
   }
 
-  private logPaymentEvent(type: PaymentEvent['type'], data: any) {
+  private logPaymentEvent(type: PaymentEvent['type'], data: Record<string, unknown>) {
     const event: PaymentEvent = {
       id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       sessionId: data.id || data.sessionId || '',

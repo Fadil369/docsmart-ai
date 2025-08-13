@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react'
 import { 
   useStripe, 
-  useElements, 
-  PaymentElement,
+  useElements,
   PaymentRequestButtonElement
 } from '@stripe/react-stripe-js'
 import { PaymentSession } from '@/types/payment'
 import { paymentService } from '@/lib/payment-service'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { toast } from 'sonner'
 import { Loader2, CreditCard, Smartphone } from 'lucide-react'
 
 interface StripeCheckoutProps {
