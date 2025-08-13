@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Eye, Target } from '@phosphor-icons/react'
+import { Brain, Translate, ArrowsIn, Eye, Target } from '@phosphor-icons/react'
 import { Sparkles } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -80,7 +80,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
       await setAnalysis(analysisResult)
       setIsAnalyzing(false)
       toast.success('Analysis framework ready for production use')
-    } catch (error) {
+    } catch (_error) {
       setIsAnalyzing(false)
       toast.error('Analysis setup failed')
     }
@@ -95,7 +95,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
       
       setIsTranslating(false)
       toast.success('Translation framework ready for production use')
-    } catch (error) {
+    } catch (_error) {
       setIsTranslating(false)
       toast.error('Translation setup failed')
     }
@@ -115,7 +115,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
       setCompressionResult({ originalSize, compressedSize })
       setIsCompressing(false)
       toast.success('Compression framework ready for production use')
-    } catch (error) {
+    } catch (_error) {
       setIsCompressing(false)
       toast.error('Compression setup failed')
     }
