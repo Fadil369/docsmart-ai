@@ -25,8 +25,8 @@ interface TemplatePreset {
   templates: AnalysisTemplate[]
   isDefault: boolean
   isFavorite: boolean
-  createdAt: Date
-  updatedAt: Date
+  createdAt: Date | string
+  updatedAt: Date | string
   usageCount: number
   tags: string[]
 }

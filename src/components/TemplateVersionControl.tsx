@@ -25,7 +25,7 @@ interface TemplateVersion {
     name: string
     avatar?: string
   }
-  createdAt: Date
+  createdAt: Date | string
   message: string
   isActive: boolean
   parentVersion?: string
@@ -57,8 +57,8 @@ interface TemplateConflict {
     }>
   }>
   status: 'pending' | 'resolved' | 'ignored'
-  createdAt: Date
-  resolvedAt?: Date
+  createdAt: Date | string
+  resolvedAt?: Date | string
   resolution?: 'merge' | 'override' | 'manual'
 }
 
@@ -554,7 +554,7 @@ function VersionCard({ version, index, isSelected, onSelect, onActivate, getChan
                   {version.message}
                 </CardDescription>
                 <p className="text-xs text-muted-foreground mt-1">
-                  by {version.author.name} • {version.createdAt.toLocaleDateString()}
+                  by {version.author.name} • {new Date(version.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </div>
@@ -615,7 +615,7 @@ function ConflictCard({ conflict, index, onResolve, onViewDetails }: ConflictCar
                   {conflict.description}
                 </CardDescription>
                 <p className="text-xs text-muted-foreground mt-1">
-                  {conflict.createdAt.toLocaleDateString()}
+                  {new Date(conflict.createdAt).toLocaleDateString()}
                 </p>
               </div>
             </div>

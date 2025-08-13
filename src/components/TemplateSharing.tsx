@@ -25,8 +25,8 @@ interface TeamMember {
   email: string
   avatar?: string
   role: 'owner' | 'admin' | 'member'
-  joinedAt: Date
-  lastActive: Date
+  joinedAt: Date | string
+  lastActive: Date | string
   isOnline: boolean
 }
 
@@ -34,7 +34,7 @@ interface SharedTemplate {
   id: string
   template: AnalysisTemplate
   sharedBy: TeamMember
-  sharedAt: Date
+  sharedAt: Date | string
   visibility: 'team' | 'public' | 'private'
   permissions: {
     canEdit: boolean
@@ -59,7 +59,7 @@ interface ShareRequest {
   toUser: TeamMember
   message: string
   status: 'pending' | 'accepted' | 'declined'
-  createdAt: Date
+  createdAt: Date | string
 }
 
 interface TemplateSharingProps {

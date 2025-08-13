@@ -14,7 +14,7 @@ interface Document {
   size: number
   type: string
   status: string
-  uploadedAt: Date
+  uploadedAt: Date | string
 }
 
 function App() {

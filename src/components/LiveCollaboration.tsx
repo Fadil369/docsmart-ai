@@ -20,7 +20,7 @@ interface CollaborativeActivity {
   templateName?: string
   templateId?: string
   description: string
-  timestamp: Date
+  timestamp: Date | string
   metadata?: {
     rating?: number
     comment?: string
@@ -33,7 +33,7 @@ interface OnlineUser {
   name: string
   avatar?: string
   currentTemplate?: string
-  lastSeen: Date
+  lastSeen: Date | string
   isEditing: boolean
 }
 
@@ -44,7 +44,7 @@ interface CollaborationNotification {
   message: string
   fromUser: string
   templateId?: string
-  timestamp: Date
+  timestamp: Date | string
   read: boolean
   actionRequired: boolean
 }
@@ -212,9 +212,10 @@ export function LiveCollaboration({ className }: LiveCollaborationProps) {
     }
   }
 
-  const formatTimeAgo = (date: Date) => {
+  const formatTimeAgo = (date: Date | string) => {
     const now = new Date()
-    const diff = now.getTime() - date.getTime()
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    const diff = now.getTime() - dateObj.getTime()
     const minutes = Math.floor(diff / (1000 * 60))
     
     if (minutes < 1) return 'Just now'
