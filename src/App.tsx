@@ -37,6 +37,7 @@ function App() {
   const [showAuth, setShowAuth] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [showPayments, setShowPayments] = useState(false) // New payment page state
+  const [currentPage, setCurrentPage] = useState<'app' | 'payment'>('app')
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   const [aiCopilotReady, setAiCopilotReady] = useState(false)
