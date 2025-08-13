@@ -6,19 +6,19 @@ import { Badge } from '@/components/ui/badge'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Upload, 
-  Languages, 
-  Zap, 
-  Merge, 
-  BarChart3, 
+  Globe, 
+  Lightning, 
+  ArrowsIn, 
+  ChartBar, 
   Brain, 
-  Share2, 
+  Share, 
   Users, 
-  FileText, 
+  File, 
   Copy, 
   Download,
-  FileUp,
-  Loader2
-} from '@phosphor-icons/react'
+  UploadSimple,
+  Circle
+} from '@/lib/safe-icons'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -36,9 +36,10 @@ interface WorkspaceAreaProps {
   onActionClick: (actionId: string, files?: File[]) => void
   activeActions: string[]
   actionProgress: Record<string, number>
+  aiCopilotReady?: boolean
 }
 
-export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: WorkspaceAreaProps) {
+export function WorkspaceArea({ onActionClick, activeActions, actionProgress, aiCopilotReady = false }: WorkspaceAreaProps) {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isMobile, setIsMobile] = useState(false)
@@ -64,28 +65,28 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
     {
       id: 'translate',
       label: 'Translate',
-      icon: Languages,
+      icon: Globe,
       description: 'AR ⇄ EN translation',
       color: 'bg-green-500 hover:bg-green-600'
     },
     {
       id: 'compress',
       label: 'Compress',
-      icon: Zap,
+      icon: Lightning,
       description: 'Reduce file size smartly',
       color: 'bg-orange-500 hover:bg-orange-600'
     },
     {
       id: 'merge',
       label: 'Merge & Consolidate',
-      icon: Merge,
+      icon: ArrowsIn,
       description: 'Combine multiple documents',
       color: 'bg-purple-500 hover:bg-purple-600'
     },
     {
       id: 'analyze',
       label: 'Analyze',
-      icon: BarChart3,
+      icon: ChartBar,
       description: 'Extract insights & data',
       color: 'bg-indigo-500 hover:bg-indigo-600'
     },
@@ -99,7 +100,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
     {
       id: 'share',
       label: 'Share',
-      icon: Share2,
+      icon: Share,
       description: 'Share with team members',
       color: 'bg-cyan-500 hover:bg-cyan-600'
     },
@@ -113,7 +114,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
     {
       id: 'template',
       label: 'Make Template',
-      icon: FileText,
+      icon: File,
       description: 'Create reusable template',
       color: 'bg-yellow-500 hover:bg-yellow-600'
     },
@@ -177,6 +178,15 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
       toast.info('Action already in progress...')
       return
     }
+
+    // Check if AI Copilot action requires the service to be ready
+    if (actionId === 'ai-analyze' && !aiCopilotReady) {
+      toast.error('AI Copilot is not ready yet', {
+        description: 'Please wait for the AI Copilot Assistant to initialize.'
+      })
+      return
+    }
+
     onActionClick(actionId, selectedFiles)
   }
 
@@ -203,7 +213,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
             animate={dragActive ? { scale: 1.1 } : { scale: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <FileUp size={isMobile ? 32 : 48} className="mx-auto text-primary" />
+            <UploadSimple size={isMobile ? 32 : 48} className="mx-auto text-primary" />
           </motion.div>
           
           <div className="space-y-1 sm:space-y-2">
@@ -255,12 +265,14 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
               <AnimatePresence>
                 {workspaceActions.map((action, index) => {
                   const isActive = activeActions.includes(action.id)
                   const progress = actionProgress[action.id] || 0
                   const Icon = action.icon
+                  const isAiCopilot = action.id === 'ai-analyze'
+                  const isDisabled = isActive || (isAiCopilot && !aiCopilotReady)
 
                   return (
                     <motion.div
@@ -268,19 +280,24 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: index * 0.05 }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: isDisabled ? 1 : 1.02 }}
+                      whileTap={{ scale: isDisabled ? 1 : 0.98 }}
                     >
                       <Button
                         variant="outline"
                         size="lg"
                         className={cn(
-                          "h-auto p-3 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 relative overflow-hidden text-xs sm:text-sm",
-                          "hover:shadow-lg transition-all duration-300 min-h-[80px] sm:min-h-[100px]",
-                          isActive && "ring-2 ring-primary"
+                          "h-auto p-4 sm:p-5 flex flex-col items-center gap-3 relative overflow-hidden",
+                          "hover:shadow-lg transition-all duration-300 min-h-[100px] sm:min-h-[120px]",
+                          "focus:ring-2 focus:ring-primary focus:ring-offset-2", // Enhanced focus styles
+                          isActive && "ring-2 ring-primary animate-pulse",
+                          isAiCopilot && aiCopilotReady && "ring-2 ring-gradient-to-r from-pink-500 to-violet-500 bg-gradient-to-br from-pink-50 to-violet-50 dark:from-pink-950 dark:to-violet-950",
+                          isDisabled && "opacity-60 cursor-not-allowed"
                         )}
                         onClick={() => handleActionClick(action.id)}
-                        disabled={isActive}
+                        disabled={isDisabled}
+                        aria-label={`${action.label}: ${action.description}${isAiCopilot ? (aiCopilotReady ? ' (Ready)' : ' (Loading...)') : ''}`}
+                        title={`${action.label}: ${action.description}${isAiCopilot ? (aiCopilotReady ? ' (Ready)' : ' (Loading...)') : ''}`}
                       >
                         {/* Progress Background */}
                         {isActive && (
@@ -299,18 +316,45 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
                               animate={{ rotate: 360 }}
                               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                             >
-                              <Loader2 size={24} className="text-primary" />
+                              <Circle size={28} className="text-primary" />
                             </motion.div>
                           ) : (
-                            <Icon size={24} className="text-foreground" />
+                            <div className={cn(
+                              "transition-colors duration-200",
+                              isAiCopilot && aiCopilotReady && "text-pink-600 dark:text-pink-400"
+                            )}>
+                              <Icon size={28} />
+                            </div>
+                          )}
+                          
+                          {/* AI Copilot Ready Indicator */}
+                          {isAiCopilot && aiCopilotReady && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-background"
+                            />
                           )}
                         </div>
 
-                        {/* Label */}
-                        <div className="text-center">
-                          <div className="font-medium text-sm">{action.label}</div>
-                          <div className="text-xs text-muted-foreground mt-1">
+                        {/* Label and Description */}
+                        <div className="text-center space-y-1">
+                          <div className={cn(
+                            "font-medium text-sm leading-tight",
+                            isAiCopilot && aiCopilotReady && "text-pink-700 dark:text-pink-300"
+                          )}>
+                            {action.label}
+                          </div>
+                          <div className="text-xs text-muted-foreground leading-tight">
                             {action.description}
+                            {isAiCopilot && (
+                              <div className={cn(
+                                "text-xs mt-1 font-medium",
+                                aiCopilotReady ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
+                              )}>
+                                {aiCopilotReady ? "✓ Ready" : "⏳ Loading..."}
+                              </div>
+                            )}
                           </div>
                         </div>
 
@@ -328,7 +372,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-6 border-t">
               <div className="text-center">
                 <div className="text-2xl font-bold text-primary">
                   {selectedFiles.length}
@@ -342,8 +386,15 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress }: 
                 <div className="text-sm text-muted-foreground">Processing</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-bold text-blue-500">AI</div>
-                <div className="text-sm text-muted-foreground">Powered</div>
+                <div className={cn(
+                  "text-2xl font-bold transition-colors duration-300",
+                  aiCopilotReady ? "text-green-500" : "text-amber-500"
+                )}>
+                  {aiCopilotReady ? "✓" : "⏳"}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  AI Copilot {aiCopilotReady ? "Ready" : "Loading"}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-purple-500">∞</div>

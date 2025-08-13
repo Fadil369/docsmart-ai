@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/mock-spark'
 
 export function useSidebar() {
   const [isOpen, setIsOpen] = useKV('sidebar-open', false)

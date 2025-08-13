@@ -3,31 +3,32 @@ import { Badge } from '@/components/ui/badge'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
 import { 
-  FileText, 
-  Grid3x3, 
+  File, 
+  Square, 
   List, 
-  Settings,
+  Gear,
   Brain,
   Bell,
   User,
   Moon,
   Sun,
-  Sidebar
-} from '@phosphor-icons/react'
+  House
+} from '@/lib/safe-icons'
 
 interface HeaderProps {
   documentsCount: number
   viewMode: 'grid' | 'list'
   onViewModeChange: (mode: 'grid' | 'list') => void
+  aiCopilotReady?: boolean
 }
 
-export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderProps) {
+export function Header({ documentsCount, viewMode, onViewModeChange, aiCopilotReady = false }: HeaderProps) {
   const { theme, toggleTheme } = useTheme()
   const { toggle, isMobile } = useSidebar()
 
   return (
-    <header className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8 p-3 sm:p-4 lg:p-6 bg-card rounded-xl lg:rounded-2xl border">
-      <div className="flex items-center gap-2 sm:gap-4">
+    <header className="flex items-center justify-between mb-6 sm:mb-8 lg:mb-10 p-4 sm:p-6 lg:p-8 bg-card rounded-xl lg:rounded-2xl border shadow-sm">
+      <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
         {/* Sidebar Toggle (Mobile + Desktop) */}
         <Button
           variant="ghost"
@@ -35,7 +36,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
           onClick={toggle}
           className="h-8 w-8 p-0 lg:h-9 lg:w-9"
         >
-          <Sidebar size={isMobile ? 16 : 18} />
+          <House size={isMobile ? 16 : 18} />
         </Button>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -52,13 +53,27 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
         
         {documentsCount > 0 && (
           <Badge variant="secondary" className="ml-2 sm:ml-4 text-xs">
-            <FileText size={12} className="mr-1" />
+            <File size={12} className="mr-1" />
             {documentsCount}
             <span className="hidden sm:inline">
               {' '}document{documentsCount !== 1 ? 's' : ''}
             </span>
           </Badge>
         )}
+
+        {/* AI Copilot Status */}
+        <Badge 
+          variant={aiCopilotReady ? "default" : "secondary"} 
+          className={`ml-2 text-xs transition-all duration-300 ${
+            aiCopilotReady 
+              ? 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md' 
+              : 'bg-muted text-muted-foreground'
+          }`}
+        >
+          <Brain size={12} className="mr-1" />
+          <span className="hidden lg:inline">AI Copilot: </span>
+          {aiCopilotReady ? 'Ready' : 'Loading...'}
+        </Badge>
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2 lg:gap-3">
@@ -87,7 +102,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
             onClick={() => onViewModeChange('grid')}
             className="h-7 w-7 p-0"
           >
-            <Grid3x3 size={14} />
+            <Square size={14} />
           </Button>
           <Button
             variant={viewMode === 'list' ? 'default' : 'ghost'}
@@ -107,7 +122,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
         
         {/* Settings - Hidden on small screens */}
         <Button variant="outline" size="sm" className="hidden lg:flex">
-          <Settings size={16} className="mr-2" />
+          <Gear size={16} className="mr-2" />
           Settings
         </Button>
 

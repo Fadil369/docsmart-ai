@@ -1,4 +1,4 @@
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/mock-spark'
 import { useEffect } from 'react'
 
 export type Theme = 'light' | 'dark'

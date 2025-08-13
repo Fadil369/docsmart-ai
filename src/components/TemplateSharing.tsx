@@ -15,7 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Switch } from '@/components/ui/switch'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast } from 'sonner'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/mock-spark'
 import { AnalysisTemplate } from './AnalysisTemplates'
 import { TemplateVersionControl } from './TemplateVersionControl'
 

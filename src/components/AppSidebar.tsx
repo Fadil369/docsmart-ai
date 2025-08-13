@@ -7,24 +7,23 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Progress } from '@/components/ui/progress'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
-  FileText, 
-  Clock, 
+  File, 
+  Circle, 
   Users, 
   Bell, 
-  FolderOpen,
+  House,
   Eye,
   Download,
-  Share2,
-  MoreHorizontal,
-  Circle,
-  Activity,
-  Zap,
-  CheckCircle,
+  Share,
+  House as MoreHorizontal,
+  Circle as Activity,
+  Lightning,
+  Circle as CheckCircle,
   AlertCircle,
-  X
-} from '@phosphor-icons/react'
+  Circle as X
+} from '@/lib/safe-icons'
 import { cn } from '@/lib/utils'
-import { useKV } from '@github/spark/hooks'
+import { useKV } from '@/lib/mock-spark'
 import { useSidebar } from '@/lib/use-sidebar'
 
 interface Document {
@@ -90,13 +89,13 @@ export function AppSidebar() {
   const getStatusIcon = (status: Document['status']) => {
     switch (status) {
       case 'processing':
-        return <Zap size={16} className="text-blue-500 animate-pulse" />
+        return <Lightning size={16} className="text-blue-500 animate-pulse" />
       case 'completed':
         return <CheckCircle size={16} className="text-green-500" />
       case 'error':
         return <AlertCircle size={16} className="text-red-500" />
       case 'queued':
-        return <Clock size={16} className="text-orange-500" />
+        return <Circle size={16} className="text-orange-500" />
       default:
         return <Circle size={16} className="text-gray-400" />
     }
@@ -105,11 +104,11 @@ export function AppSidebar() {
   const getActivityIcon = (type: Activity['type']) => {
     switch (type) {
       case 'upload':
-        return <FileText size={16} className="text-blue-500" />
+        return <File size={16} className="text-blue-500" />
       case 'process':
-        return <Zap size={16} className="text-purple-500" />
+        return <Lightning size={16} className="text-purple-500" />
       case 'share':
-        return <Share2 size={16} className="text-green-500" />
+        return <Share size={16} className="text-green-500" />
       case 'collaborate':
         return <Users size={16} className="text-orange-500" />
       case 'export':
@@ -141,10 +140,10 @@ export function AppSidebar() {
   }
 
   const tabs = [
-    { id: 'documents', label: 'Documents', icon: FileText, count: documents.length },
+    { id: 'documents', label: 'Documents', icon: File, count: documents.length },
     { id: 'activity', label: 'Activity', icon: Activity, count: activities.length },
     { id: 'team', label: 'Team', icon: Users, count: teamMembers.filter(m => m.status === 'online').length },
-    { id: 'drive', label: 'Drive', icon: FolderOpen, count: 0 },
+    { id: 'drive', label: 'Drive', icon: House, count: 0 },
     { id: 'notifications', label: 'Alerts', icon: Bell, count: notifications.filter(n => !n.read).length }
   ]
 
@@ -198,7 +197,7 @@ export function AppSidebar() {
                   onClick={close}
                   className="h-8 w-8 p-0"
                 >
-                  <X size={16} />
+                  <Circle size={16} />
                 </Button>
               )}
             </div>
@@ -247,7 +246,7 @@ export function AppSidebar() {
                     </h3>
                     {documents.length === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
-                        <FileText size={24} className="mx-auto mb-2 opacity-50" />
+                        <File size={24} className="mx-auto mb-2 opacity-50" />
                         <p className="text-sm">No documents yet</p>
                       </div>
                     ) : (
@@ -394,7 +393,7 @@ export function AppSidebar() {
                       Drive Documents
                     </h3>
                     <div className="text-center py-8 text-muted-foreground">
-                      <FolderOpen size={24} className="mx-auto mb-2 opacity-50" />
+                      <House size={24} className="mx-auto mb-2 opacity-50" />
                       <p className="text-sm">Drive integration coming soon</p>
                     </div>
                   </motion.div>
