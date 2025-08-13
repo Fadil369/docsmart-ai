@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @import "tw-animate-css";
 
+/* Arabic font support */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -9,6 +12,23 @@
   body {
     @apply bg-background text-foreground font-sans;
     font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  }
+
+  /* Arabic font styling */
+  .font-arabic {
+    font-family: 'Noto Sans Arabic', 'Noto Sans', Arial, sans-serif;
+    direction: rtl;
+    text-align: right;
+  }
+
+  /* Healthcare-specific styling */
+  .healthcare-gradient {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  }
+
+  .medical-card {
+    border-left: 4px solid #ef4444;
+    background: linear-gradient(to right, #fef2f2, #ffffff);
   }
 
   /* Accessibility Improvements */

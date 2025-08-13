@@ -5,6 +5,8 @@ import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
 import { TrialGuard } from '@/components/TrialGuard'
 import { trackFeatureUsage } from '@/lib/analytics'
+import { healthcareTemplates, getTemplatesByStakeholder } from '@/lib/healthcare-templates'
+import { HealthcareTemplate } from '@/lib/healthcare-templates'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Upload, 
@@ -19,7 +21,12 @@ import {
   Copy, 
   Download,
   UploadSimple,
-  Circle
+  Circle,
+  Heartbeat,
+  Stethoscope,
+  Hospital,
+  Prescription,
+  MicrophoneStage
 } from '@/lib/safe-icons'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
@@ -27,12 +34,16 @@ import { toast } from 'sonner'
 interface WorkspaceAction {
   id: string
   label: string
+  arabicLabel?: string
   icon: React.ComponentType<any>
   description: string
+  arabicDescription?: string
   color: string
   isLoading?: boolean
   progress?: number
   isGated?: boolean // Whether this feature requires trial access
+  isHealthcare?: boolean // Whether this is a healthcare-specific feature
+  template?: HealthcareTemplate
 }
 
 interface WorkspaceAreaProps {
@@ -40,12 +51,21 @@ interface WorkspaceAreaProps {
   activeActions: string[]
   actionProgress: Record<string, number>
   aiCopilotReady?: boolean
+  stakeholderType?: 'provider' | 'patient' | 'insurer' | 'admin' | 'regulator'
 }
 
-export function WorkspaceArea({ onActionClick, activeActions, actionProgress, aiCopilotReady = false }: WorkspaceAreaProps) {
+export function WorkspaceArea({ 
+  onActionClick, 
+  activeActions, 
+  actionProgress, 
+  aiCopilotReady = false,
+  stakeholderType = 'provider'
+}: WorkspaceAreaProps) {
   const [dragActive, setDragActive] = useState(false)
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [isMobile, setIsMobile] = useState(false)
+  const [showHealthcareMode, setShowHealthcareMode] = useState(true)
+  const [selectedLanguage, setSelectedLanguage] = useState<'en' | 'ar'>('en')
 
   useEffect(() => {
     const checkMobile = () => {
@@ -57,96 +77,157 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
     return () => window.removeEventListener('resize', checkMobile)
   }, [])
 
-  const workspaceActions: WorkspaceAction[] = [
+  // Get healthcare templates for the current stakeholder
+  const healthcareTemplatesForStakeholder = getTemplatesByStakeholder(stakeholderType)
+
+  const baseActions: WorkspaceAction[] = [
     {
       id: 'upload',
       label: 'Upload',
+      arabicLabel: 'رفع',
       icon: Upload,
       description: 'Upload documents instantly',
+      arabicDescription: 'رفع الوثائق فوراً',
       color: 'bg-blue-500 hover:bg-blue-600',
-      isGated: false // Basic upload is free
+      isGated: false,
+      isHealthcare: false
     },
     {
       id: 'translate',
       label: 'Translate',
+      arabicLabel: 'ترجم',
       icon: Globe,
       description: 'AR ⇄ EN translation',
+      arabicDescription: 'ترجمة عربي ⇄ إنجليزي',
       color: 'bg-green-500 hover:bg-green-600',
-      isGated: true // Advanced feature
-    },
-    {
-      id: 'compress',
-      label: 'Compress',
-      icon: Lightning,
-      description: 'Reduce file size smartly',
-      color: 'bg-orange-500 hover:bg-orange-600',
-      isGated: true // Advanced feature
-    },
-    {
-      id: 'merge',
-      label: 'Merge & Consolidate',
-      icon: ArrowsIn,
-      description: 'Combine multiple documents',
-      color: 'bg-purple-500 hover:bg-purple-600',
-      isGated: true // Advanced feature
-    },
-    {
-      id: 'analyze',
-      label: 'Analyze',
-      icon: ChartBar,
-      description: 'Extract insights & data',
-      color: 'bg-indigo-500 hover:bg-indigo-600',
-      isGated: true // Advanced feature
+      isGated: true,
+      isHealthcare: false
     },
     {
       id: 'ai-analyze',
-      label: 'AI Copilot Analysis',
+      label: 'AI Analysis',
+      arabicLabel: 'تحليل ذكي',
       icon: Brain,
       description: 'Powered by AI intelligence',
+      arabicDescription: 'مدعوم بالذكاء الاصطناعي',
       color: 'bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600',
-      isGated: true // Premium feature
-    },
-    {
-      id: 'share',
-      label: 'Share',
-      icon: Share,
-      description: 'Share with team members',
-      color: 'bg-cyan-500 hover:bg-cyan-600',
-      isGated: true // Collaboration feature
-    },
-    {
-      id: 'collaborate',
-      label: 'Collaborate',
-      icon: Users,
-      description: 'Real-time collaboration',
-      color: 'bg-teal-500 hover:bg-teal-600',
-      isGated: true // Collaboration feature
-    },
-    {
-      id: 'template',
-      label: 'Make Template',
-      icon: File,
-      description: 'Create reusable template',
-      color: 'bg-yellow-500 hover:bg-yellow-600',
-      isGated: true // Advanced feature
-    },
-    {
-      id: 'copy',
-      label: 'Make Copy',
-      icon: Copy,
-      description: 'Duplicate document',
-      color: 'bg-gray-500 hover:bg-gray-600',
-      isGated: false // Basic feature
-    },
-    {
-      id: 'export',
-      label: 'Export',
-      icon: Download,
-      description: 'Download in various formats',
-      color: 'bg-emerald-500 hover:bg-emerald-600',
-      isGated: true // Advanced feature
+      isGated: true,
+      isHealthcare: false
     }
   ]
+
+  const healthcareActions: WorkspaceAction[] = [
+    {
+      id: 'saudi-prescription',
+      label: 'E-Prescription',
+      arabicLabel: 'وصفة إلكترونية',
+      icon: Prescription,
+      description: 'Create Saudi MOH compliant prescription',
+      arabicDescription: 'إنشاء وصفة طبية متوافقة مع وزارة الصحة',
+      color: 'bg-emerald-500 hover:bg-emerald-600',
+      isGated: true,
+      isHealthcare: true,
+      template: healthcareTemplatesForStakeholder.find(t => t.id === 'saudi-prescription')
+    },
+    {
+      id: 'medical-analysis',
+      label: 'Medical Analysis',
+      arabicLabel: 'تحليل طبي',
+      icon: Stethoscope,
+      description: 'AI-powered medical document analysis',
+      arabicDescription: 'تحليل الوثائق الطبية بالذكاء الاصطناعي',
+      color: 'bg-red-500 hover:bg-red-600',
+      isGated: true,
+      isHealthcare: true
+    },
+    {
+      id: 'nphies-claim',
+      label: 'NPHIES Claim',
+      arabicLabel: 'مطالبة نفيس',
+      icon: Hospital,
+      description: 'Process insurance claim via NPHIES',
+      arabicDescription: 'معالجة مطالبة التأمين عبر نفيس',
+      color: 'bg-blue-600 hover:bg-blue-700',
+      isGated: true,
+      isHealthcare: true,
+      template: healthcareTemplatesForStakeholder.find(t => t.id === 'nphies-claim')
+    },
+    {
+      id: 'voice-command',
+      label: 'Voice Commands',
+      arabicLabel: 'أوامر صوتية',
+      icon: MicrophoneStage,
+      description: 'Arabic voice commands for medical workflows',
+      arabicDescription: 'أوامر صوتية بالعربية للعمليات الطبية',
+      color: 'bg-purple-500 hover:bg-purple-600',
+      isGated: true,
+      isHealthcare: true
+    },
+    {
+      id: 'fhir-export',
+      label: 'FHIR Export',
+      arabicLabel: 'تصدير FHIR',
+      icon: Download,
+      description: 'Export in FHIR healthcare format',
+      arabicDescription: 'تصدير بصيغة FHIR الصحية',
+      color: 'bg-indigo-500 hover:bg-indigo-600',
+      isGated: true,
+      isHealthcare: true
+    },
+    {
+      id: 'clinical-decision',
+      label: 'Clinical Support',
+      arabicLabel: 'دعم سريري',
+      icon: Heartbeat,
+      description: 'Clinical decision support system',
+      arabicDescription: 'نظام دعم القرار السريري',
+      color: 'bg-teal-500 hover:bg-teal-600',
+      isGated: true,
+      isHealthcare: true
+    }
+  ]
+
+  // Combine base and healthcare actions based on mode
+  const workspaceActions: WorkspaceAction[] = showHealthcareMode 
+    ? [...baseActions, ...healthcareActions] 
+    : [...baseActions, 
+       {
+         id: 'compress',
+         label: 'Compress',
+         icon: Lightning,
+         description: 'Reduce file size smartly',
+         color: 'bg-orange-500 hover:bg-orange-600',
+         isGated: true,
+         isHealthcare: false
+       },
+       {
+         id: 'merge',
+         label: 'Merge',
+         icon: ArrowsIn,
+         description: 'Combine multiple documents',
+         color: 'bg-purple-500 hover:bg-purple-600',
+         isGated: true,
+         isHealthcare: false
+       },
+       {
+         id: 'share',
+         label: 'Share',
+         icon: Share,
+         description: 'Share with team members',
+         color: 'bg-cyan-500 hover:bg-cyan-600',
+         isGated: true,
+         isHealthcare: false
+       },
+       {
+         id: 'template',
+         label: 'Make Template',
+         icon: File,
+         description: 'Create reusable template',
+         color: 'bg-yellow-500 hover:bg-yellow-600',
+         isGated: true,
+         isHealthcare: false
+       }
+      ]
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault()
@@ -279,10 +360,63 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
         <Card className="p-3 sm:p-4 lg:p-6">
           <div className="space-y-4 sm:space-y-6">
             <div className="text-center space-y-1 sm:space-y-2">
-              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">AI-Powered Workspace</h2>
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold">
+                {showHealthcareMode ? 'BrainSAIT Healthcare Workspace' : 'AI-Powered Workspace'}
+              </h2>
               <p className="text-sm sm:text-base text-muted-foreground px-2">
-                Transform your documents with intelligent processing tools
+                {showHealthcareMode 
+                  ? 'Healthcare document intelligence for Saudi medical professionals'
+                  : 'Transform your documents with intelligent processing tools'
+                }
               </p>
+            </div>
+
+            {/* Healthcare Mode Controls */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4 bg-muted/50 rounded-lg">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant={showHealthcareMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setShowHealthcareMode(true)}
+                  className="flex items-center gap-2"
+                >
+                  <Heartbeat size={16} />
+                  Healthcare Mode
+                </Button>
+                <Button
+                  variant={!showHealthcareMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setShowHealthcareMode(false)}
+                  className="flex items-center gap-2"
+                >
+                  <File size={16} />
+                  General Mode
+                </Button>
+              </div>
+              
+              {showHealthcareMode && (
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant={selectedLanguage === 'en' ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedLanguage('en')}
+                  >
+                    EN
+                  </Button>
+                  <Button
+                    variant={selectedLanguage === 'ar' ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setSelectedLanguage('ar')}
+                  >
+                    العربية
+                  </Button>
+                  <Badge variant="secondary" className="text-xs">
+                    {stakeholderType === 'provider' ? 'Healthcare Provider' :
+                     stakeholderType === 'patient' ? 'Patient' :
+                     stakeholderType === 'insurer' ? 'Insurance Company' : 'Healthcare Professional'}
+                  </Badge>
+                </div>
+              )}
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
@@ -361,23 +495,35 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
                         <div className="text-center space-y-1">
                           <div className={cn(
                             "font-medium text-sm leading-tight",
-                            isAiCopilot && aiCopilotReady && "text-pink-700 dark:text-pink-300"
+                            isAiCopilot && aiCopilotReady && "text-pink-700 dark:text-pink-300",
+                            selectedLanguage === 'ar' && "font-arabic"
                           )}>
-                            {action.label}
+                            {selectedLanguage === 'ar' && action.arabicLabel ? action.arabicLabel : action.label}
                             {action.isGated && (
                               <Badge variant="secondary" className="ml-2 text-xs">
-                                Pro
+                                {selectedLanguage === 'ar' ? 'مميز' : 'Pro'}
+                              </Badge>
+                            )}
+                            {action.isHealthcare && (
+                              <Badge variant="default" className="ml-1 text-xs bg-red-500">
+                                {selectedLanguage === 'ar' ? 'طبي' : 'Medical'}
                               </Badge>
                             )}
                           </div>
-                          <div className="text-xs text-muted-foreground leading-tight">
-                            {action.description}
+                          <div className={cn(
+                            "text-xs text-muted-foreground leading-tight",
+                            selectedLanguage === 'ar' && "text-right font-arabic"
+                          )}>
+                            {selectedLanguage === 'ar' && action.arabicDescription ? action.arabicDescription : action.description}
                             {isAiCopilot && (
                               <div className={cn(
                                 "text-xs mt-1 font-medium",
                                 aiCopilotReady ? "text-green-600 dark:text-green-400" : "text-amber-600 dark:text-amber-400"
                               )}>
-                                {aiCopilotReady ? "✓ Ready" : "⏳ Loading..."}
+                                {aiCopilotReady 
+                                  ? (selectedLanguage === 'ar' ? "✓ جاهز" : "✓ Ready")
+                                  : (selectedLanguage === 'ar' ? "⏳ جاري التحميل..." : "⏳ Loading...")
+                                }
                               </div>
                             )}
                           </div>
