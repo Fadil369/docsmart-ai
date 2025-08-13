@@ -1,349 +1,327 @@
-# DocSmart AI - Intelligent Document Processing Platform
+# DocSmart AI - Comprehensive Document Processing Platform
 
-## Overview
+A powerful, AI-driven document processing platform that provides comprehensive tools for document analysis, compression, translation, merging, and intelligent insights generation.
 
-DocSmart AI is a modern, AI-powered document processing platform that enables users to upload, analyze, translate, compress, and collaborate on documents with advanced machine learning capabilities.
+## 🚀 Features
 
-## Features
+### Core Document Processing
+- **Multi-format Support**: PDF, Word, Excel, PowerPoint, images, text files, and archives
+- **Intelligent Extraction**: Advanced content extraction with OCR capabilities
+- **Batch Processing**: Handle multiple documents simultaneously
 
-### Core Features
-- 📄 **Document Upload & Processing** - Support for PDF, DOC, DOCX, TXT, RTF files
-- 🤖 **AI-Powered Analysis** - Advanced document insights and summaries
-- 🌐 **Document Translation** - Multi-language translation capabilities
-- 🗜️ **Smart Compression** - Reduce file sizes while maintaining quality
-- 👥 **Real-time Collaboration** - Work together on documents with live editing
-- 📊 **Analytics Dashboard** - Track document processing metrics
-- 💳 **Payment Integration** - Stripe and PayPal support for premium features
+### AI-Powered Analysis
+- **Document Analysis**: Deep content analysis using OpenAI GPT-4o
+- **Intelligent Insights**: Generate actionable insights and recommendations
+- **Content Summarization**: Automatic document summarization
+- **PRD Generation**: Create Product Requirement Documents from analysis
 
-### Security & Authentication
-- 🔐 **Secure Authentication** - Login, signup, email verification
-- 👤 **User Profiles** - Customizable user settings and preferences
-- 🛡️ **Role-based Access** - User and admin role management
-- 🔑 **Password Recovery** - Secure password reset functionality
-- ✅ **Email Verification** - Verify user accounts via email
+### Document Operations
+- **Smart Compression**: Multiple compression methods including Ghostscript
+- **Document Merging**: Intelligent merging with customizable options
+- **Arabic Translation**: Specialized Arabic translation support
+- **Format Conversion**: Convert between different document formats
 
-### Technical Features
-- ⚡ **Modern Stack** - React 19, TypeScript, Vite, Tailwind CSS
-- 📱 **Responsive Design** - Mobile-first responsive interface
-- 🎨 **Dark/Light Theme** - Toggle between themes
-- ♿ **Accessibility** - WCAG compliant with keyboard navigation
-- 🚀 **Performance Optimized** - Code splitting and lazy loading
-- 📈 **Monitoring** - Error tracking and analytics integration
+### Advanced Capabilities
+- **OCR Processing**: Extract text from images and scanned documents
+- **Metadata Extraction**: Comprehensive document metadata analysis
+- **Quality Assessment**: Document quality and readability scoring
+- **Error Handling**: Robust error management and recovery
 
-## Quick Start
+## 🛠 Technology Stack
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn package manager
+### Core Technologies
+- **React 18** with TypeScript
+- **Context API** for state management
+- **React Router** for navigation
+- **Tailwind CSS** for styling
 
-### Installation
+### Document Processing Libraries
+- **pdf-lib**: PDF manipulation and compression
+- **mammoth**: Word document processing
+- **xlsx**: Excel file handling
+- **marked**: Markdown processing
+- **tesseract.js**: OCR capabilities
+- **sharp**: Image processing
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Fadil369/docsmart-ai.git
-   cd docsmart-ai
-   ```
+### AI Integration
+- **OpenAI GPT-4o**: Document analysis and insights
+- **Azure AI Language**: Enhanced translation services
+- **GitHub Copilot API**: Additional AI capabilities
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### Utility Libraries
+- **jszip**: Archive handling
+- **papaparse**: CSV processing
+- **file-type**: File type detection
+- **archiver**: Archive creation
+- **compression**: Data compression
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
-
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to `http://localhost:5173`
-
-### Demo Login
-For testing purposes, use these credentials:
-- **Email**: `demo@docsmart.ai`
-- **Password**: `demo123`
-
-## Environment Configuration
-
-Copy `.env.example` to `.env` and configure the following:
-
-### Required Settings
-```env
-VITE_APP_NAME="DocSmart AI"
-VITE_APP_ENV="development"
-VITE_APP_URL="http://localhost:5173"
-```
-
-### API Configuration
-```env
-VITE_API_BASE_URL="https://api.docsmart-ai.com"
-VITE_API_TIMEOUT="30000"
-```
-
-### Authentication
-```env
-VITE_AUTH_ENABLED="true"
-VITE_JWT_SECRET="your-jwt-secret-key-here"
-```
-
-### Payment Integration (Optional)
-```env
-VITE_STRIPE_PUBLISHABLE_KEY="pk_test_your_stripe_key"
-VITE_PAYPAL_CLIENT_ID="your-paypal-client-id"
-```
-
-### AI Services (Optional)
-```env
-VITE_AI_SERVICE_ENABLED="true"
-VITE_OPENAI_API_KEY="your-openai-api-key"
-```
-
-See `.env.example` for complete configuration options.
-
-## Development
-
-### Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
-- `npm run test` - Run test suite
-
-### Code Quality
-
-```bash
-# Lint code
-npm run lint
-
-# Fix linting issues
-npm run lint -- --fix
-
-# Run tests
-npm run test
-
-# Build project
-npm run build
-```
-
-## Testing
-
-### Running Tests
-```bash
-# Run all tests
-npm run test
-
-# Run tests in watch mode
-npm run test:watch
-
-# Run tests with coverage
-npm run test:coverage
-```
-
-### Test Coverage
-- Authentication system
-- Core document processing
-- User interface components
-- API integration points
-
-## Deployment
-
-### Cloudflare Pages (Recommended)
-
-1. **Connect Repository**
-   - Go to Cloudflare Pages dashboard
-   - Connect your GitHub repository
-
-2. **Configure Build Settings**
-   ```
-   Build command: npm run build
-   Build output directory: dist
-   Root directory: /
-   ```
-
-3. **Set Environment Variables**
-   Configure production environment variables in Cloudflare Pages dashboard
-
-4. **Deploy**
-   Push to main branch for automatic deployment
-
-See [CLOUDFLARE_DEPLOYMENT.md](./CLOUDFLARE_DEPLOYMENT.md) for detailed deployment instructions.
-
-### Other Platforms
-
-The application can also be deployed to:
-- Vercel
-- Netlify
-- GitHub Pages
-- AWS S3 + CloudFront
-
-## Architecture
-
-### Tech Stack
-- **Frontend**: React 19, TypeScript, Vite
-- **Styling**: Tailwind CSS, Radix UI
-- **State Management**: React Context, React Query
-- **Authentication**: JWT-based with localStorage
-- **Payments**: Stripe, PayPal
-- **Testing**: Vitest, React Testing Library
-- **Build**: Vite with TypeScript
+## 🏗 Architecture
 
 ### Project Structure
 ```
 src/
-├── components/          # Reusable UI components
-│   ├── auth/           # Authentication components
-│   ├── payment/        # Payment components
-│   └── ui/             # Base UI components
-├── contexts/           # React context providers
-├── hooks/              # Custom React hooks
-├── lib/                # Utility functions
-├── styles/             # Global styles
-├── types/              # TypeScript type definitions
-└── __tests__/          # Test files
+├── components/
+│   ├── documents/
+│   │   ├── DocumentUpload.tsx
+│   │   ├── DocumentList.tsx
+│   │   └── DocumentViewer.tsx
+│   ├── layout/
+│   │   ├── Navbar.tsx
+│   │   └── Sidebar.tsx
+│   └── ui/
+│       ├── ProcessingProgress.tsx
+│       ├── ErrorDisplay.tsx
+│       └── EnvironmentStatus.tsx
+├── contexts/
+│   └── DocumentContext.tsx
+├── services/
+│   └── DocumentProcessor.ts
+├── config/
+│   └── app.config.ts
+├── pages/
+│   ├── HomePage.tsx
+│   ├── WorkspacePage.tsx
+│   ├── AnalyticsPage.tsx
+│   └── SettingsPage.tsx
+└── App.tsx
 ```
 
-## Contributing
+### Key Components
 
-### Development Workflow
+#### DocumentProcessor Service
+The core service handling all document operations:
+- Document processing and analysis
+- Compression with multiple methods
+- Translation services
+- Merging capabilities
+- AI-powered insights generation
 
+#### DocumentContext
+Centralized state management for:
+- Document storage and selection
+- Processing progress tracking
+- Error handling
+- Analysis results
+- Translation data
+
+#### UI Components
+- **ProcessingProgress**: Real-time processing feedback
+- **ErrorDisplay**: Comprehensive error reporting
+- **EnvironmentStatus**: API configuration validation
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 16+ and npm
+- API keys for desired services (see configuration below)
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone <repository-url>
+cd docsmart-ai
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Configure environment variables**
+```bash
+cp .env.example .env
+# Edit .env with your API keys
+```
+
+4. **Start the development server**
+```bash
+npm start
+```
+
+## ⚙️ Configuration
+
+### Required API Keys
+Copy `.env.example` to `.env` and configure:
+
+#### OpenAI (Required for AI features)
+```env
+REACT_APP_OPENAI_API_KEY=your_openai_api_key_here
+```
+
+#### Azure AI Services (Optional - Enhanced translation)
+```env
+REACT_APP_AZURE_AI_LANGUAGE_KEY=your_azure_language_key_here
+REACT_APP_AZURE_AI_LANGUAGE_ENDPOINT=https://your-resource.cognitiveservices.azure.com/
+```
+
+#### GitHub (Optional - Copilot integration)
+```env
+REACT_APP_GITHUB_TOKEN=your_github_token_here
+```
+
+### Performance Settings
+```env
+REACT_APP_MAX_FILE_SIZE=50MB
+REACT_APP_MAX_CONCURRENT_PROCESSING=3
+REACT_APP_CHUNK_SIZE=1MB
+```
+
+### Document Processing Settings
+```env
+REACT_APP_ENABLE_OCR=true
+REACT_APP_COMPRESSION_QUALITY=0.7
+REACT_APP_DEFAULT_TARGET_LANGUAGE=ar
+```
+
+## 📚 Usage
+
+### Document Upload
+1. Navigate to the Workspace page
+2. Drag and drop files or click to select
+3. Supported formats: PDF, DOCX, XLSX, PPTX, images, text files
+
+### Document Operations
+
+#### Compression
+- Select documents and click "Compress"
+- Choose compression method: basic, aggressive, or Ghostscript
+- Download compressed versions
+
+#### Translation
+- Select documents for Arabic translation
+- AI-powered translation with context awareness
+- Download translated versions
+
+#### Merging
+- Select multiple documents
+- Configure merge options (format, order, metadata)
+- Generate merged document
+
+#### Analysis & Insights
+- AI-powered document analysis
+- Generate insights and recommendations
+- Create Product Requirement Documents (PRDs)
+
+### Batch Operations
+- Select multiple documents using checkboxes
+- Apply operations to all selected documents
+- Track progress with real-time updates
+
+## 🔧 Advanced Features
+
+### OCR Processing
+Automatic text extraction from:
+- Scanned documents
+- Images with text
+- PDF files with embedded images
+
+### Compression Methods
+1. **Basic**: Standard compression algorithms
+2. **Aggressive**: Maximum compression with quality trade-offs
+3. **Ghostscript**: Professional PDF compression
+
+### AI Analysis Types
+- **Content Analysis**: Structure, topics, key points
+- **Quality Assessment**: Readability, completeness
+- **Insight Generation**: Actionable recommendations
+- **PRD Creation**: Product requirement documentation
+
+### Error Handling
+- Comprehensive error tracking
+- User-friendly error messages
+- Automatic retry mechanisms
+- Graceful degradation
+
+## 🧪 Development
+
+### Adding New Document Types
+1. Update `supportedFormats` in `app.config.ts`
+2. Add processing logic in `DocumentProcessor.extractContent()`
+3. Handle format-specific operations
+
+### Extending AI Capabilities
+1. Add new analysis types in `DocumentProcessor.analyzeDocument()`
+2. Update the analysis interface types
+3. Implement UI components for new features
+
+### Custom Compression Methods
+1. Implement compression logic in `DocumentProcessor.compressDocument()`
+2. Add configuration options
+3. Update UI controls
+
+## 🚀 Deployment
+
+### Build for Production
+```bash
+npm run build
+```
+
+### Environment Variables
+Ensure all required environment variables are set in your deployment environment.
+
+### Performance Optimization
+- Enable compression in your web server
+- Configure CDN for static assets
+- Set up monitoring for API usage
+
+## 📊 Monitoring
+
+### Built-in Monitoring
+- Processing progress tracking
+- Error reporting and logging
+- Performance metrics collection
+
+### External Monitoring
+- API usage tracking
+- Document processing analytics
+- User interaction metrics
+
+## 🔒 Security
+
+### API Key Management
+- Environment variable isolation
+- Client-side key validation
+- Secure transmission protocols
+
+### Data Privacy
+- No server-side storage
+- Client-side processing
+- Secure API communications
+
+## 🤝 Contributing
+
+### Development Setup
 1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Make changes and add tests
-4. Run quality checks (`npm run lint && npm run test`)
-5. Commit changes (`git commit -m 'Add amazing feature'`)
-6. Push branch (`git push origin feature/amazing-feature`)
-7. Open Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new functionality
+5. Submit a pull request
 
-### Code Standards
-- Follow TypeScript strict mode
-- Use ESLint and Prettier for formatting
-- Write tests for new features
-- Follow conventional commit messages
-- Maintain accessibility standards
+### Code Style
+- TypeScript strict mode
+- ESLint configuration
+- Prettier formatting
+- Component documentation
 
-## Security
+## 📄 License
 
-### Security Measures
-- Input validation and sanitization
-- HTTPS-only in production
-- Secure JWT token handling
-- Environment variable protection
-- CORS configuration
-- Rate limiting
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-### Reporting Issues
-Report security vulnerabilities to: security@docsmart-ai.com
+## 🙏 Acknowledgments
 
-## Performance
+- OpenAI for GPT-4o API
+- Azure AI Services team
+- All open-source library contributors
+- React and TypeScript communities
 
-### Optimization Features
-- Code splitting and lazy loading
-- Image optimization
-- Bundle size monitoring
-- CDN asset delivery
-- Gzip compression
+## 📞 Support
 
-### Lighthouse Targets
-- Performance: > 90
-- Accessibility: > 95
-- Best Practices: > 90
-- SEO: > 90
-
-## Browser Support
-
-- Chrome 88+
-- Firefox 85+
-- Safari 14+
-- Edge 88+
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Support
-
-### Getting Help
-- 📖 [Documentation](./docs/)
-- 🐛 [Issue Tracker](https://github.com/Fadil369/docsmart-ai/issues)
-- 💬 [Discussions](https://github.com/Fadil369/docsmart-ai/discussions)
-- 📧 Email: support@docsmart-ai.com
-
-### Community
-- Follow [@docsmart_ai](https://twitter.com/docsmart_ai) on Twitter
-- Join our [Discord community](https://discord.gg/docsmart)
+For support and questions:
+- Create an issue on GitHub
+- Check the documentation
+- Review configuration examples
 
 ---
 
-**Built with ❤️ by the DocSmart AI Team**
-## 🚀 Deployment
-
-This project is configured for deployment on **Cloudflare Pages** with automatic GitHub integration.
-
-### Quick Deploy to Cloudflare Pages
-
-1. **Fork this repository** or use it as a template
-2. **Connect to Cloudflare Pages**:
-   - Go to [Cloudflare Dashboard](https://dash.cloudflare.com/) → Pages
-   - Click "Create a project" → "Connect to Git"
-   - Select your repository
-
-3. **Configure build settings**:
-   ```
-   Project name: docsmart-ai
-   Production branch: main
-   Build command: npm run build
-   Build output directory: dist
-   ```
-
-4. **Set environment variables** in Cloudflare Pages:
-   ```
-   NODE_ENV=production
-   VITE_APP_ENV=production
-   ```
-
-5. **Deploy!** - Your app will be live at `https://docsmart-ai.pages.dev`
-
-### Local Development with Cloudflare
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build locally
-npm run preview
-
-# Deploy to Cloudflare Pages (requires auth)
-npm run deploy:cloudflare
-```
-
-### GitHub Actions Deployment
-
-The repository includes automated deployment via GitHub Actions. To enable:
-
-1. **Add GitHub Secrets**:
-   - `CLOUDFLARE_API_TOKEN` - Your Cloudflare API token
-   - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
-
-2. **Push to main branch** - Deployment happens automatically!
-
-For detailed setup instructions, see [CLOUDFLARE_DEPLOYMENT.md](./CLOUDFLARE_DEPLOYMENT.md).
-
-### Migration from GitHub Pages
-
-If you're migrating from GitHub Pages:
-- The old GitHub Pages workflow has been removed
-- DNS records need to be updated to point to Cloudflare Pages
-- All functionality is preserved with better performance and features
-
+**Built with ❤️ using React, TypeScript, and AI**

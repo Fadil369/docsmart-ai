@@ -1,91 +1,71 @@
-// App.tsx - Phase 1 Refactored: Clean provider composition + routing
-// Extracted: page logic → individual pages, demo timer → context, documents → context
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { DocumentProvider } from './contexts/DocumentContext';
+import { Toaster } from 'react-hot-toast';
 
-import { Suspense } from 'react'
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { Toaster } from 'sonner'
-import { ErrorBoundary } from 'react-error-boundary'
+// Import pages
+import HomePage from './pages/HomePage';
+import WorkspacePage from './pages/WorkspacePage';
+import AnalyticsPage from './pages/AnalyticsPage';
+import SettingsPage from './pages/SettingsPage';
 
-// Context Providers
-import { DocumentProvider } from '@/contexts/DocumentContext'
-import { DemoTimerProvider } from '@/contexts/DemoTimerContext'
-import { SidebarProvider } from '@/components/ui/sidebar'
+// Import layout components
+import Navbar from './components/layout/Navbar';
+import Sidebar from './components/layout/Sidebar';
 
-// Pages
-import { LandingPage } from '@/pages/LandingPage'
-import { WorkspacePage } from '@/pages/WorkspacePage'
-import { PaymentPage } from '@/pages/PaymentPage'
+// Import styles
+import './App.css';
 
-// Components
-import { AppSidebar } from '@/components/AppSidebar'
-import { ErrorFallback } from '@/ErrorFallback'
-
-// Loading Skeleton Component
-function PageSkeleton() {
+function App() {
   return (
-    <div className="min-h-screen bg-background">
-      <div className="animate-pulse space-y-4 p-8">
-        <div className="h-8 bg-muted rounded w-1/4"></div>
-        <div className="h-4 bg-muted rounded w-1/2"></div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-32 bg-muted rounded"></div>
-          ))}
+    <DocumentProvider>
+      <Router>
+        <div className="App">
+          {/* Toast notifications */}
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 4000,
+              style: {
+                background: '#363636',
+                color: '#fff',
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: '#4ade80',
+                  secondary: '#fff',
+                },
+              },
+              error: {
+                duration: 5000,
+                iconTheme: {
+                  primary: '#ef4444',
+                  secondary: '#fff',
+                },
+              },
+            }}
+          />
+
+          {/* Navigation */}
+          <Navbar />
+          
+          <div className="app-container">
+            <Sidebar />
+            
+            <main className="main-content">
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/workspace" element={<WorkspacePage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/settings" element={<SettingsPage />} />
+              </Routes>
+            </main>
+          </div>
         </div>
-      </div>
-    </div>
-  )
+      </Router>
+    </DocumentProvider>
+  );
 }
 
-// Workspace Layout with Sidebar
-function WorkspaceLayout() {
-  return (
-    <SidebarProvider>
-      <div className="flex min-h-screen bg-background">
-        <AppSidebar />
-        <WorkspacePage />
-      </div>
-    </SidebarProvider>
-  )
-}
-
-// Main App Component
-export default function App() {
-  return (
-    <ErrorBoundary FallbackComponent={ErrorFallback}>
-      <BrowserRouter>
-        <DemoTimerProvider
-          options={{
-            durationMs: 3 * 60 * 1000, // 3 minutes
-            onExpire: () => {
-              console.log('Demo expired - consider showing upgrade modal')
-            }
-          }}
-        >
-          <DocumentProvider>
-            <div className="min-h-screen bg-background">
-              <Suspense fallback={<PageSkeleton />}>
-                <Routes>
-                  {/* Landing Page */}
-                  <Route path="/" element={<LandingPage />} />
-                  
-                  {/* Workspace with Sidebar */}
-                  <Route path="/workspace" element={<WorkspaceLayout />} />
-                  
-                  {/* Payment */}
-                  <Route path="/payment" element={<PaymentPage />} />
-                  
-                  {/* Fallback redirect */}
-                  <Route path="*" element={<Navigate to="/" replace />} />
-                </Routes>
-              </Suspense>
-
-              {/* Global UI */}
-              <Toaster position="top-right" />
-            </div>
-          </DocumentProvider>
-        </DemoTimerProvider>
-      </BrowserRouter>
-    </ErrorBoundary>
-  )
-}
+export default App;
