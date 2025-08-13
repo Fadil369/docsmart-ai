@@ -12,7 +12,8 @@ const testTrial = async () => {
   
   // Reset trial for clean test
   if (typeof resetTrial !== 'undefined') {
-    resetTrial()
+  if (typeof window !== 'undefined' && window.trialDebug && typeof window.trialDebug.resetTrial === 'function') {
+    window.trialDebug.resetTrial()
   }
   
   // Initialize new trial
