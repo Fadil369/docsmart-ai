@@ -21,8 +21,8 @@ import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
 import { toast } from 'sonner'
 import { getOrCreateTrial, getTrialStatus, hasGatedAccess, endTrial, resetTrial } from '@/lib/user-trial'
-import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
 
+import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
 interface Document {
   id: string
   name: string
@@ -39,7 +39,8 @@ function App() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showAuth, setShowAuth] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
-  const [currentPage, setCurrentPage] = useState<'landing' | 'app' | 'payment'>('landing')
+  const [showPayments, setShowPayments] = useState(false) // New payment page state
+  const [currentPage, setCurrentPage] = useState<"landing" | "app" | "payment">("landing")
   const [demoStartTime, setDemoStartTime] = useState<number | null>(null)
   const [isDemoActive, setIsDemoActive] = useState(false)
   const [demoTimeRemaining, setDemoTimeRemaining] = useState<number>(0)
@@ -76,25 +77,27 @@ function App() {
       if (hash === '#/payment') {
         setCurrentPage('payment')
         trackPaymentPageView('hash_navigation')
-      } else if (hash === '#/app') {
-        setCurrentPage('app')
+  // Handle routing based on hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      if (hash === "#/payment") {
+        setCurrentPage("payment")
+        trackPaymentPageView("hash_navigation")
       }
       // Do not automatically set to app - let landing page stay
     }
 
     // Check initial hash only if there is one
     const currentHash = window.location.hash
-    if (currentHash === '#/payment') {
-      setCurrentPage('payment')
-    } else if (currentHash === '#/app') {
-      setCurrentPage('app')
+    if (currentHash === "#/payment") {
+      handleHashChange()
     }
 
     // Listen for hash changes
-    window.addEventListener('hashchange', handleHashChange)
-    return () => window.removeEventListener('hashchange', handleHashChange)
+    window.addEventListener("hashchange", handleHashChange)
+    return () => window.removeEventListener("hashchange", handleHashChange)
   }, [])
-
   // Demo timer effect
   useEffect(() => {
     if (!isDemoActive || !demoStartTime) return
@@ -106,8 +109,8 @@ function App() {
 
       if (remaining === 0) {
         setIsDemoActive(false)
-        setCurrentPage('payment')
-        trackTrialEvent('demo_expired')
+        setCurrentPage("payment")
+        trackTrialEvent("demo_expired")
         clearInterval(interval)
       }
     }, 1000)
@@ -250,10 +253,11 @@ function App() {
     setDemoStartTime(now)
     setIsDemoActive(true)
     setDemoTimeRemaining(300000) // 5 minutes
-    setCurrentPage('app')
-    trackTrialEvent('demo_started')
-    // Set hash for app access
-    window.location.hash = '#/app'
+    setCurrentPage("app")
+    window.location.hash = "#/app"
+      }
+      // Keep landing page if no specific hash
+    trackTrialEvent("demo_started")
   }
 
   const handleAuthClose = () => {
@@ -269,25 +273,30 @@ function App() {
   }
 
   const handlePaymentsClick = () => {
-    setCurrentPage('payment')
-    window.location.hash = '#/payment'
+    setShowPayments(true)
+  }
+
+  const handlePaymentsClose = () => {
+    setShowPayments(false)
   }
 
   const handlePaymentSuccess = (_session: PaymentSession) => {
     toast.success('Payment successful!', {
       description: 'Your access has been activated.'
     })
-    setCurrentPage('app')
-    window.location.hash = '#/app'
+    setShowPayments(false)
   }
+
 
   const handleBackToApp = () => {
     setCurrentPage('app')
-    window.location.hash = '#/app'
+      }
+      // Keep landing page if no specific hash
+    window.location.hash = '#/'
   }
 
   // Show landing page
-  if (currentPage === 'landing') {
+  if (currentPage === "landing") {
     return (
       <>
         <LandingPage onGetStarted={handleGetStarted} />
@@ -336,11 +345,11 @@ function App() {
           {isDemoActive ? (
             <DemoCountdown 
               timeRemaining={demoTimeRemaining}
-              onUpgradeClick={() => setCurrentPage('payment')}
+              onUpgradeClick={() => setCurrentPage("payment")}
             />
           ) : (
             <TrialCountdown 
-              onUpgradeClick={() => setCurrentPage('payment')}
+              onUpgradeClick={() => setCurrentPage("payment")}
             />
           )}
 
