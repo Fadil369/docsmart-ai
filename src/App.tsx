@@ -7,6 +7,7 @@ import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
 import { TrialCountdown } from '@/components/TrialCountdown'
+import { DemoCountdown } from '@/components/DemoCountdown'
 import { AuthModal } from '@/components/auth/AuthModal'
 import { UserProfile } from '@/components/auth/UserProfile'
 import { PaymentSession } from '@/types/payment'
@@ -36,11 +37,14 @@ function App() {
   const { isAuthenticated, user } = useAuth()
   const [documents, setDocuments] = useKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [showLanding, setShowLanding] = useState(false) // Temporarily skip landing
+  const [showLanding, setShowLanding] = useState(true) // Start with landing page
   const [showAuth, setShowAuth] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
   const [showPayments, setShowPayments] = useState(false) // New payment page state
-  const [currentPage, setCurrentPage] = useState<'app' | 'payment'>('app')
+  const [currentPage, setCurrentPage] = useState<"landing" | "app" | "payment">("landing")
+  const [demoStartTime, setDemoStartTime] = useState<number | null>(null)
+  const [isDemoActive, setIsDemoActive] = useState(false)
+  const [demoTimeRemaining, setDemoTimeRemaining] = useState<number>(0)
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   const [aiCopilotReady, setAiCopilotReady] = useState(false)
@@ -85,6 +89,26 @@ function App() {
     // Listen for hash changes
     window.addEventListener('hashchange', handleHashChange)
     return () => window.removeEventListener('hashchange', handleHashChange)
+
+  // Demo timer effect
+  useEffect(() => {
+    if (!isDemoActive || !demoStartTime) return
+
+    const interval = setInterval(() => {
+      const elapsed = Date.now() - demoStartTime
+      const remaining = Math.max(0, 300000 - elapsed) // 5 minutes in ms
+      setDemoTimeRemaining(remaining)
+
+      if (remaining === 0) {
+        setIsDemoActive(false)
+        setCurrentPage("payment")
+        trackTrialEvent("demo_expired")
+        clearInterval(interval)
+      }
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [isDemoActive, demoStartTime])
   }, [])
 
   // Initialize AI Copilot Assistant on app load
@@ -217,10 +241,14 @@ function App() {
   }
 
   const handleGetStarted = () => {
+    // Start timed demo
+    const now = Date.now()
+    setDemoStartTime(now)
+    setIsDemoActive(true)
+    setDemoTimeRemaining(300000) // 5 minutes
+    setCurrentPage("app")
     setShowLanding(false)
-    if (!isAuthenticated) {
-      setShowAuth(true)
-    }
+    trackTrialEvent("demo_started")
   }
 
   const handleAuthClose = () => {
@@ -250,24 +278,14 @@ function App() {
     setShowPayments(false)
   }
 
-  if (showPayments) {
-    return (
-      <>
-        <PaymentPage 
-          onClose={handlePaymentsClose}
-          onSuccess={handlePaymentSuccess}
-        />
-        <Toaster />
-      </>
-    )
-  }
 
   const handleBackToApp = () => {
     setCurrentPage('app')
     window.location.hash = '#/'
   }
 
-  if (showLanding) {
+  // Show landing page
+  if (currentPage === "landing") {
     return (
       <>
         <LandingPage onGetStarted={handleGetStarted} />
@@ -312,10 +330,17 @@ function App() {
             user={user}
           />
 
-          {/* Trial Countdown */}
-          <TrialCountdown 
-            onUpgradeClick={() => setCurrentPage('payment')}
-          />
+          {/* Demo/Trial Countdown */}
+          {isDemoActive ? (
+            <DemoCountdown 
+              timeRemaining={demoTimeRemaining}
+              onUpgradeClick={() => setCurrentPage("payment")}
+            />
+          ) : (
+            <TrialCountdown 
+              onUpgradeClick={() => setCurrentPage("payment")}
+            />
+          )}
 
           {/* Enhanced Workspace Area */}
           <WorkspaceArea 
