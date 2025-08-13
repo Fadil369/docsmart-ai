@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Sparkles, Eye, Target } from '@phosphor-icons/react'
+import { Brain, Translate, ArrowsIn, DocumentDuplicate, Download, Star, Eye, Target } from '@phosphor-icons/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -172,7 +172,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isAnalyzing ? (
-                  <Sparkles size={14} className="animate-spin" />
+                  <Star size={14} className="animate-spin" />
                 ) : (
                   <Brain size={14} />
                 )}
@@ -187,7 +187,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isTranslating ? (
-                  <Sparkles size={14} className="animate-spin" />
+                  <Star size={14} className="animate-spin" />
                 ) : (
                   <Translate size={14} />
                 )}
@@ -202,7 +202,7 @@ export function DocumentCard({ document, index }: DocumentCardProps) {
                 className="flex items-center gap-2 text-xs sm:text-sm h-8 sm:h-9"
               >
                 {isCompressing ? (
-                  <Sparkles size={14} className="animate-spin" />
+                  <Star size={14} className="animate-spin" />
                 ) : (
                   <ArrowsIn size={14} />
                 )}
