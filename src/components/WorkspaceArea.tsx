@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Badge } from '@/components/ui/badge'
+import { TrialGuard } from '@/components/TrialGuard'
+import { trackFeatureUsage } from '@/lib/analytics'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   Upload, 
@@ -30,6 +32,7 @@ interface WorkspaceAction {
   color: string
   isLoading?: boolean
   progress?: number
+  isGated?: boolean // Whether this feature requires trial access
 }
 
 interface WorkspaceAreaProps {
@@ -60,77 +63,88 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
       label: 'Upload',
       icon: Upload,
       description: 'Upload documents instantly',
-      color: 'bg-blue-500 hover:bg-blue-600'
+      color: 'bg-blue-500 hover:bg-blue-600',
+      isGated: false // Basic upload is free
     },
     {
       id: 'translate',
       label: 'Translate',
       icon: Globe,
       description: 'AR ⇄ EN translation',
-      color: 'bg-green-500 hover:bg-green-600'
+      color: 'bg-green-500 hover:bg-green-600',
+      isGated: true // Advanced feature
     },
     {
       id: 'compress',
       label: 'Compress',
       icon: Lightning,
       description: 'Reduce file size smartly',
-      color: 'bg-orange-500 hover:bg-orange-600'
+      color: 'bg-orange-500 hover:bg-orange-600',
+      isGated: true // Advanced feature
     },
     {
       id: 'merge',
       label: 'Merge & Consolidate',
       icon: ArrowsIn,
       description: 'Combine multiple documents',
-      color: 'bg-purple-500 hover:bg-purple-600'
+      color: 'bg-purple-500 hover:bg-purple-600',
+      isGated: true // Advanced feature
     },
     {
       id: 'analyze',
       label: 'Analyze',
       icon: ChartBar,
       description: 'Extract insights & data',
-      color: 'bg-indigo-500 hover:bg-indigo-600'
+      color: 'bg-indigo-500 hover:bg-indigo-600',
+      isGated: true // Advanced feature
     },
     {
       id: 'ai-analyze',
       label: 'AI Copilot Analysis',
       icon: Brain,
       description: 'Powered by AI intelligence',
-      color: 'bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600'
+      color: 'bg-gradient-to-r from-pink-500 to-violet-500 hover:from-pink-600 hover:to-violet-600',
+      isGated: true // Premium feature
     },
     {
       id: 'share',
       label: 'Share',
       icon: Share,
       description: 'Share with team members',
-      color: 'bg-cyan-500 hover:bg-cyan-600'
+      color: 'bg-cyan-500 hover:bg-cyan-600',
+      isGated: true // Collaboration feature
     },
     {
       id: 'collaborate',
       label: 'Collaborate',
       icon: Users,
       description: 'Real-time collaboration',
-      color: 'bg-teal-500 hover:bg-teal-600'
+      color: 'bg-teal-500 hover:bg-teal-600',
+      isGated: true // Collaboration feature
     },
     {
       id: 'template',
       label: 'Make Template',
       icon: File,
       description: 'Create reusable template',
-      color: 'bg-yellow-500 hover:bg-yellow-600'
+      color: 'bg-yellow-500 hover:bg-yellow-600',
+      isGated: true // Advanced feature
     },
     {
       id: 'copy',
       label: 'Make Copy',
       icon: Copy,
       description: 'Duplicate document',
-      color: 'bg-gray-500 hover:bg-gray-600'
+      color: 'bg-gray-500 hover:bg-gray-600',
+      isGated: false // Basic feature
     },
     {
       id: 'export',
       label: 'Export',
       icon: Download,
       description: 'Download in various formats',
-      color: 'bg-emerald-500 hover:bg-emerald-600'
+      color: 'bg-emerald-500 hover:bg-emerald-600',
+      isGated: true // Advanced feature
     }
   ]
 
@@ -178,6 +192,12 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
       toast.info('Action already in progress...')
       return
     }
+
+    // Track feature usage
+    trackFeatureUsage(actionId, {
+      source: 'workspace_area',
+      timestamp: new Date().toISOString()
+    })
 
     // Check if AI Copilot action requires the service to be ready
     if (actionId === 'ai-analyze' && !aiCopilotReady) {
@@ -274,7 +294,7 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
                   const isAiCopilot = action.id === 'ai-analyze'
                   const isDisabled = isActive || (isAiCopilot && !aiCopilotReady)
 
-                  return (
+                  const buttonContent = (
                     <motion.div
                       key={action.id}
                       initial={{ opacity: 0, scale: 0.9 }}
@@ -344,6 +364,11 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
                             isAiCopilot && aiCopilotReady && "text-pink-700 dark:text-pink-300"
                           )}>
                             {action.label}
+                            {action.isGated && (
+                              <Badge variant="secondary" className="ml-2 text-xs">
+                                Pro
+                              </Badge>
+                            )}
                           </div>
                           <div className="text-xs text-muted-foreground leading-tight">
                             {action.description}
@@ -367,6 +392,35 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
                       </Button>
                     </motion.div>
                   )
+
+                  // Wrap gated features with TrialGuard
+                  if (action.isGated) {
+                    return (
+                      <TrialGuard
+                        key={action.id}
+                        redirectToPayment={true}
+                        fallback={
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ delay: index * 0.05 }}
+                            className="relative"
+                          >
+                            <div className="absolute inset-0 bg-background/80 backdrop-blur-sm z-10 rounded-lg flex items-center justify-center">
+                              <Badge variant="secondary" className="text-xs">
+                                Trial Expired
+                              </Badge>
+                            </div>
+                            {buttonContent}
+                          </motion.div>
+                        }
+                      >
+                        {buttonContent}
+                      </TrialGuard>
+                    )
+                  }
+
+                  return buttonContent
                 })}
               </AnimatePresence>
             </div>

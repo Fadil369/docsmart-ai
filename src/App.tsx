@@ -6,9 +6,13 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
+import { PaymentPage } from '@/components/PaymentPage'
+import { TrialCountdown } from '@/components/TrialCountdown'
 import { useKV } from '@/lib/mock-spark'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
+import { getOrCreateTrial, getTrialStatus, hasGatedAccess, endTrial, resetTrial } from '@/lib/user-trial'
+import { trackPaymentPageView, trackTrialEvent, trackFeatureUsage } from '@/lib/analytics'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { aiService } from '@/lib/ai-service'
@@ -28,6 +32,7 @@ function App() {
   const [documents, setDocuments] = useKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showLanding, setShowLanding] = useState(false) // Temporarily skip landing
+  const [currentPage, setCurrentPage] = useState<'app' | 'payment'>('app')
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   const [aiCopilotReady, setAiCopilotReady] = useState(false)
@@ -35,6 +40,44 @@ function App() {
   // Initialize theme and sidebar on app load
   useTheme()
   const { isOpen, isMobile } = useSidebar()
+
+  // Initialize trial system
+  useEffect(() => {
+    getOrCreateTrial()
+    
+    // Expose trial functions globally for debugging/testing
+    if (typeof window !== 'undefined') {
+      window.trialDebug = {
+        getOrCreateTrial,
+        getTrialStatus,
+        hasGatedAccess,
+        endTrial,
+        resetTrial,
+        trackTrialEvent,
+        trackFeatureUsage
+      }
+    }
+  }, [])
+
+  // Handle routing based on hash
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash
+      if (hash === '#/payment') {
+        setCurrentPage('payment')
+        trackPaymentPageView('hash_navigation')
+      } else {
+        setCurrentPage('app')
+      }
+    }
+
+    // Check initial hash
+    handleHashChange()
+
+    // Listen for hash changes
+    window.addEventListener('hashchange', handleHashChange)
+    return () => window.removeEventListener('hashchange', handleHashChange)
+  }, [])
 
   // Initialize AI Copilot Assistant on app load
   useEffect(() => {
@@ -167,10 +210,25 @@ function App() {
     setShowLanding(false)
   }
 
+  const handleBackToApp = () => {
+    setCurrentPage('app')
+    window.location.hash = '#/'
+  }
+
   if (showLanding) {
     return (
       <>
         <LandingPage onGetStarted={handleGetStarted} />
+        <Toaster />
+      </>
+    )
+  }
+
+  // Show payment page
+  if (currentPage === 'payment') {
+    return (
+      <>
+        <PaymentPage onBackToApp={handleBackToApp} />
         <Toaster />
       </>
     )
@@ -195,6 +253,11 @@ function App() {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             aiCopilotReady={aiCopilotReady}
+          />
+
+          {/* Trial Countdown */}
+          <TrialCountdown 
+            onUpgradeClick={() => setCurrentPage('payment')}
           />
 
           {/* Enhanced Workspace Area */}
