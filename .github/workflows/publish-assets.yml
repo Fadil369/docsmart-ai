@@ -1,12 +1,9 @@
 name: Publish Static Assets to GitHub Pages
 
 on:
-  # Trigger on push to default branch
+  # Trigger on push to default branch and tag pushes
   push:
     branches: [ main ]
-  
-  # Trigger on tag pushes matching v*
-  push:
     tags: [ 'v*' ]
   
   # Allow manual triggering
