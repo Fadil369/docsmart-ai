@@ -6,6 +6,7 @@ import { WorkspaceArea } from '@/components/WorkspaceArea'
 import { AppSidebar } from '@/components/AppSidebar'
 import { DocumentCard } from '@/components/DocumentCard'
 import { LandingPage } from '@/components/LandingPage'
+import { PaymentPage } from '@/components/payment'
 import { useKV } from '@/lib/mock-spark'
 import { useTheme } from '@/lib/theme'
 import { useSidebar } from '@/lib/use-sidebar'
@@ -28,6 +29,7 @@ function App() {
   const [documents, setDocuments] = useKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [showLanding, setShowLanding] = useState(false) // Temporarily skip landing
+  const [showPayments, setShowPayments] = useState(false) // New payment page state
   const [activeActions, setActiveActions] = useState<string[]>([])
   const [actionProgress, setActionProgress] = useState<Record<string, number>>({})
   const [aiCopilotReady, setAiCopilotReady] = useState(false)
@@ -167,6 +169,33 @@ function App() {
     setShowLanding(false)
   }
 
+  const handlePaymentsClick = () => {
+    setShowPayments(true)
+  }
+
+  const handlePaymentsClose = () => {
+    setShowPayments(false)
+  }
+
+  const handlePaymentSuccess = (session: any) => {
+    toast.success('Payment successful!', {
+      description: 'Your access has been activated.'
+    })
+    setShowPayments(false)
+  }
+
+  if (showPayments) {
+    return (
+      <>
+        <PaymentPage 
+          onClose={handlePaymentsClose}
+          onSuccess={handlePaymentSuccess}
+        />
+        <Toaster />
+      </>
+    )
+  }
+
   if (showLanding) {
     return (
       <>
@@ -195,6 +224,7 @@ function App() {
             viewMode={viewMode}
             onViewModeChange={setViewMode}
             aiCopilotReady={aiCopilotReady}
+            onPaymentsClick={handlePaymentsClick}
           />
 
           {/* Enhanced Workspace Area */}

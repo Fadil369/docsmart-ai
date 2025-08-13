@@ -10,7 +10,8 @@ import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { motion } from 'framer-motion'
 import { useKV } from '@/lib/mock-spark'
-import { FileText, Target, Brain, Building, Table, Settings, Trash2, Plus } from '@phosphor-icons/react'
+import { FileText, Target, Brain, Building, Table, Plus } from '@phosphor-icons/react'
+import { Settings, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface AnalysisTemplate {
