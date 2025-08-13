@@ -86,7 +86,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
                 <ArrowsIn size={20} className="text-success" />
               </div>
               <div>
-                <p className="text-2xl font-bold">65%</p>
+                <p className="text-2xl font-bold">-</p>
                 <p className="text-xs text-muted-foreground">Avg Compression</p>
               </div>
             </div>
@@ -100,7 +100,7 @@ export function Header({ documentsCount, viewMode, onViewModeChange }: HeaderPro
                 <DocumentDuplicate size={20} className="text-secondary-foreground" />
               </div>
               <div>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-2xl font-bold">-</p>
                 <p className="text-xs text-muted-foreground">Operations</p>
               </div>
             </div>

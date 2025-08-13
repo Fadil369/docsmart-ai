@@ -4,6 +4,7 @@ import { DocumentUpload } from '@/components/DocumentUpload'
 import { DocumentCard } from '@/components/DocumentCard'
 import { Header } from '@/components/Header'
 import { LiveCollaboration } from '@/components/LiveCollaboration'
+import { LandingPage } from '@/components/LandingPage'
 import { useKV } from '@github/spark/hooks'
 import { motion } from 'framer-motion'
 import { cn } from '@/lib/utils'
@@ -20,6 +21,7 @@ interface Document {
 function App() {
   const [documents, setDocuments] = useKV<Document[]>('documents', [])
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [showLanding, setShowLanding] = useState(true)
 
   const handleFilesUploaded = (uploadedFiles: any[]) => {
     const newDocuments: Document[] = uploadedFiles.map(file => ({
@@ -39,6 +41,19 @@ function App() {
       currentDocs.map(doc =>
         doc.id === documentId ? { ...doc, status } : doc
       )
+    )
+  }
+
+  const handleGetStarted = () => {
+    setShowLanding(false)
+  }
+
+  if (showLanding) {
+    return (
+      <>
+        <LandingPage onGetStarted={handleGetStarted} />
+        <Toaster />
+      </>
     )
   }
 
