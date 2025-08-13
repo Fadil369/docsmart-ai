@@ -1,17 +1,12 @@
 name = "docsmart-ai"
 compatibility_date = "2024-08-13"
+pages_build_output_dir = "dist"
 
 [env.production]
 name = "docsmart-ai"
 
 [env.preview]
 name = "docsmart-ai-preview"
-
-# Pages configuration
-[[pages]]
-project_name = "docsmart-ai"
-build_dir = "dist"
-build_command = "npm run build"
 
 # Custom headers for security and performance
 [[pages.headers]]
