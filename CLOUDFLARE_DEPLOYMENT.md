@@ -1,128 +1,196 @@
-# Cloudflare Pages Deployment Configuration
+# Cloudflare Pages Deployment Guide
 
-This project is configured for deployment on Cloudflare Pages.
+This project is configured for deployment on Cloudflare Pages with GitHub integration.
 
-## Deployment Settings
+## Quick Setup
 
-### Build Configuration
+### 1. Cloudflare Pages Setup
+
+1. **Login to Cloudflare Dashboard**
+   - Visit [Cloudflare Dashboard](https://dash.cloudflare.com/)
+   - Navigate to **Pages** in the sidebar
+
+2. **Connect to GitHub**
+   - Click **"Create a project"**
+   - Select **"Connect to Git"**
+   - Authorize Cloudflare to access your GitHub account
+   - Select the `Fadil369/docsmart-ai` repository
+
+3. **Configure Build Settings**
+   ```
+   Project name: docsmart-ai
+   Production branch: main
+   Build command: npm run build
+   Build output directory: dist
+   Root directory: /
+   ```
+
+4. **Environment Variables**
+   Add these environment variables in Cloudflare Pages settings:
+   ```
+   NODE_ENV=production
+   VITE_APP_ENV=production
+   ```
+
+### 2. GitHub Secrets Setup
+
+For the GitHub Actions workflow, add these secrets to your repository:
+
+1. **Go to Repository Settings**
+   - Navigate to `Settings` > `Secrets and variables` > `Actions`
+
+2. **Add Required Secrets**
+   ```
+   CLOUDFLARE_API_TOKEN: Your Cloudflare API token
+   CLOUDFLARE_ACCOUNT_ID: Your Cloudflare account ID
+   ```
+
+#### Getting Cloudflare Credentials
+
+1. **API Token**
+   - Go to [Cloudflare API Tokens](https://dash.cloudflare.com/profile/api-tokens)
+   - Click **"Create Token"**
+   - Use **"Cloudflare Pages:Edit"** template
+   - Scope: Include all accounts and zones
+   - Copy the generated token
+
+2. **Account ID**
+   - Found in the right sidebar of your Cloudflare dashboard
+   - Copy the Account ID value
+
+### 3. Custom Domain (Optional)
+
+1. **Add Custom Domain in Cloudflare Pages**
+   - Go to your Pages project settings
+   - Navigate to **"Custom domains"**
+   - Click **"Set up a custom domain"**
+   - Enter your domain (e.g., `docs.yourdomain.com`)
+
+2. **DNS Configuration**
+   - Add a CNAME record pointing to your Pages URL
+   - Or use Cloudflare's automatic DNS setup if your domain is on Cloudflare
+
+## Build Configuration
+
+### Build Settings
+- **Framework**: React with Vite
+- **Node.js version**: 18 or later
 - **Build command**: `npm run build`
-- **Build output directory**: `dist`
-- **Root directory**: `/`
-- **Node.js version**: `18` or later
+- **Build output**: `dist/`
+- **Install command**: `npm ci`
 
 ### Environment Variables
-
-The following environment variables should be configured in Cloudflare Pages:
 
 #### Production Environment Variables
 ```
 NODE_ENV=production
 VITE_APP_ENV=production
-VITE_APP_URL=https://your-domain.pages.dev
-VITE_API_BASE_URL=https://api.docsmart-ai.com
-VITE_AUTH_ENABLED=true
-VITE_STRIPE_PUBLISHABLE_KEY=pk_live_your_live_stripe_key
-VITE_PAYPAL_CLIENT_ID=your_production_paypal_client_id
-VITE_OPENAI_API_KEY=your_openai_api_key
-VITE_ANALYTICS_ENABLED=true
-VITE_GOOGLE_ANALYTICS_ID=G-XXXXXXXXXX
-VITE_SENTRY_DSN=your_production_sentry_dsn
 ```
 
-#### Preview Environment Variables
+Add any additional environment variables your app needs:
 ```
-NODE_ENV=development
-VITE_APP_ENV=preview
-VITE_APP_URL=https://preview.your-domain.pages.dev
-VITE_API_BASE_URL=https://api-staging.docsmart-ai.com
-VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_test_stripe_key
-VITE_PAYPAL_CLIENT_ID=your_sandbox_paypal_client_id
+VITE_API_URL=https://api.yourapp.com
+VITE_STRIPE_PUBLIC_KEY=pk_live_...
+VITE_PAYPAL_CLIENT_ID=your_paypal_client_id
 ```
 
-## Custom Domain Setup
+## Features
 
-1. Go to Cloudflare Pages dashboard
-2. Select your project
-3. Navigate to "Custom domains"
-4. Add your domain (e.g., `docsmart-ai.com`)
-5. Configure DNS records as instructed
+### Automatic Deployments
+- **Production**: Deploys automatically on push to `main` branch
+- **Preview**: Creates preview deployments for pull requests
+- **Manual**: Can be triggered manually via GitHub Actions
 
-## Build Optimization
+### Performance Optimizations
+- **Asset Caching**: Static assets cached for 1 year
+- **Security Headers**: Built-in security headers
+- **SPA Routing**: Proper client-side routing support
+- **Build Optimization**: Code splitting and minification
 
-The project includes several optimizations for Cloudflare Pages:
+### Headers Configuration
+The deployment includes these security headers:
+```
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
 
-- Static asset optimization
-- Gzip compression
-- Code splitting (recommended for bundle size > 500KB)
-- CDN-friendly caching headers
+## Development Workflow
 
-## Deployment Process
+### Local Development
+```bash
+npm install
+npm run dev
+```
 
-### Automatic Deployment
-- Pushes to `main` branch trigger production deployment
-- Pull requests trigger preview deployments
+### Build and Preview
+```bash
+npm run build
+npm run preview
+```
 
 ### Manual Deployment
-1. Build locally: `npm run build`
-2. Upload `dist` folder to Cloudflare Pages
-3. Configure environment variables
-4. Deploy
+```bash
+# Install Wrangler CLI (if not already installed)
+npm install -g wrangler
 
-## Performance Monitoring
+# Login to Cloudflare
+wrangler login
 
-Monitor your deployment with:
-- Cloudflare Analytics
-- Web Vitals metrics
-- Lighthouse scores
-- Error tracking via Sentry
-
-## Security Considerations
-
-- Environment variables are properly scoped
-- API keys are never exposed to client-side code
-- Content Security Policy (CSP) headers recommended
-- HTTPS-only cookies for authentication
-
-## Rollback Strategy
-
-1. **Immediate Rollback**: Use Cloudflare Pages dashboard to rollback to previous deployment
-2. **Code Rollback**: Revert git commit and push to main branch
-3. **Canary Deployment**: Use branch-based previews for testing before production
+# Deploy manually
+wrangler pages deploy dist --project-name docsmart-ai
+```
 
 ## Troubleshooting
 
 ### Common Issues
 
 1. **Build Failures**
-   - Check Node.js version compatibility
-   - Verify environment variables are set
-   - Review build logs in Cloudflare Pages dashboard
+   - Check Node.js version (should be 18+)
+   - Verify all dependencies are listed in package.json
+   - Check for TypeScript errors
 
-2. **Runtime Errors**
-   - Check browser console for client-side errors
-   - Verify API endpoints are accessible
-   - Confirm environment variables are correct
+2. **Environment Variables**
+   - Ensure all required variables are set in Cloudflare Pages
+   - Prefix client-side variables with `VITE_`
 
-3. **Performance Issues**
-   - Monitor Core Web Vitals
-   - Check bundle size and implement code splitting
-   - Verify CDN caching is working
+3. **Routing Issues**
+   - Verify `_redirects` file is in `public/` directory
+   - Check SPA routing configuration
 
-### Support Resources
+4. **GitHub Actions Failures**
+   - Verify CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets
+   - Check API token permissions
+
+### Getting Help
 
 - [Cloudflare Pages Documentation](https://developers.cloudflare.com/pages/)
 - [Vite Deployment Guide](https://vitejs.dev/guide/static-deploy.html)
-- [Project Repository Issues](https://github.com/Fadil369/docsmart-ai/issues)
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
 
-## Maintenance
+## Migration from GitHub Pages
 
-### Regular Tasks
-- Update dependencies monthly
-- Monitor security vulnerabilities
-- Review performance metrics
-- Test deployment process
+If migrating from GitHub Pages:
 
-### Automated Monitoring
-- Set up Cloudflare alerts for downtime
-- Configure Sentry for error monitoring
-- Monitor Core Web Vitals degradation
+1. **Remove GitHub Pages Configuration**
+   - Delete `.github/workflows/publish-assets.yml` (if exists)
+   - Remove `.nojekyll` file (if exists)
+   - Disable GitHub Pages in repository settings
+
+2. **Update DNS**
+   - Point your custom domain to Cloudflare Pages instead of GitHub Pages
+   - Update CNAME records as needed
+
+3. **Test Deployment**
+   - Push changes to trigger first Cloudflare deployment
+   - Verify all functionality works correctly
+
+## Benefits of Cloudflare Pages
+
+- **Global CDN**: Faster loading times worldwide
+- **Advanced Analytics**: Detailed performance metrics
+- **Security**: Built-in DDoS protection and security features
+- **Serverless Functions**: Add backend functionality if needed
+- **Custom Headers**: Better control over security and caching
+- **Preview Deployments**: Test changes before going live
