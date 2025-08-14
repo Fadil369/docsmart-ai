@@ -28,6 +28,7 @@ import { DocumentProvider } from './contexts/DocumentContext';
 import WorkspacePage from './pages/WorkspacePage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import HealthcareDemoPage from './pages/HealthcareDemoPage';
 
 interface Document {
   id: string
@@ -192,6 +193,14 @@ function App() {
                     >
                       🏥 Healthcare Mode
                     </button>
+                    {showHealthcareMode && (
+                      <button
+                        onClick={() => window.open('/healthcare-demo', '_blank')}
+                        className="px-4 py-2 rounded-md text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                      >
+                        🚀 Healthcare Demo
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
