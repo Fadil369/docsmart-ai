@@ -1,18 +1,13 @@
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import mammoth from 'mammoth';
-import * as XLSX from 'xlsx';
-import { marked } from 'marked';
-import TurndownService from 'turndown';
-import * as Papa from 'papaparse';
-import JSZip from 'jszip';
-import Tesseract from 'tesseract.js';
-import sharp from 'sharp';
-import OpenAI from 'openai';
-import { TextAnalyticsClient, AzureKeyCredential } from '@azure/ai-text-analytics';
-import axios from 'axios';
+import { AzureKeyCredential, TextAnalyticsClient } from '@azure/ai-text-analytics';
 import { franc } from 'franc';
-import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
+import mammoth from 'mammoth';
+import { marked } from 'marked';
+import OpenAI from 'openai';
+import * as Papa from 'papaparse';
+import { PDFDocument } from 'pdf-lib';
+import Tesseract from 'tesseract.js';
+import * as XLSX from 'xlsx';
 import { APP_CONFIG } from '../config/app.config';
 
 // Types for document processing
@@ -176,19 +171,45 @@ class DocumentProcessor {
   private async extractPDFContent(file: File): Promise<string> {
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pages = pdfDoc.getPages();
+      
+      // Enhanced PDF processing with pdfjs-dist
+      const pdfjsLib = await import('pdfjs-dist');
+      const pdfDocument = await pdfjsLib.getDocument(arrayBuffer).promise;
       
       let content = '';
-      for (let i = 0; i < pages.length; i++) {
-        // For now, we'll return basic info. In a real implementation,
-        // you'd use a proper PDF text extraction library
-        content += `Page ${i + 1}\n`;
+      const numPages = pdfDocument.numPages;
+      
+      for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+        const page = await pdfDocument.getPage(pageNum);
+        const textContent = await page.getTextContent();
+        
+        const pageText = textContent.items
+          .filter((item: any) => 'str' in item)
+          .map((item: any) => item.str)
+          .join(' ');
+        
+        content += `Page ${pageNum}:\n${pageText}\n\n`;
       }
       
       return content || 'PDF content could not be extracted';
     } catch (error) {
-      throw new Error(`PDF extraction failed: ${error instanceof Error ? error.message : String(error)}`);
+      console.warn('Advanced PDF extraction failed, falling back to basic method:', error);
+      
+      // Fallback to basic PDF processing
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        const pages = pdfDoc.getPages();
+        
+        let content = '';
+        for (let i = 0; i < pages.length; i++) {
+          content += `Page ${i + 1}: PDF page content\n`;
+        }
+        
+        return content || 'PDF content could not be extracted';
+      } catch (fallbackError) {
+        throw new Error(`PDF extraction failed: ${fallbackError instanceof Error ? fallbackError.message : String(fallbackError)}`);
+      }
     }
   }
 
@@ -263,7 +284,7 @@ class DocumentProcessor {
   }
 
   private async extractImageContent(file: File): Promise<string> {
-    if (!APP_CONFIG.documents.ocr.enabled) {
+    if (!APP_CONFIG.documents.ocr) {
       return `Image file: ${file.name} (OCR disabled)`;
     }
 
@@ -600,7 +621,7 @@ class DocumentProcessor {
     if (this.openai && content.length > 500) {
       try {
         const response = await this.openai.chat.completions.create({
-          model: APP_CONFIG.apis.openai.model,
+          model: APP_CONFIG.apis.openai.models.chat,
           messages: [
             {
               role: 'user',
@@ -716,7 +737,7 @@ class DocumentProcessor {
     try {
       if (this.openai) {
         const response = await this.openai.chat.completions.create({
-          model: APP_CONFIG.apis.openai.model,
+          model: APP_CONFIG.apis.openai.models.chat,
           messages: [
             {
               role: 'system',
