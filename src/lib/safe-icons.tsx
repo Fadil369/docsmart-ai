@@ -34,7 +34,12 @@ const icons = {
   Eye: Icon,
   Settings: Icon,
   AlertCircle: Icon,
-  Home: Icon
+  Home: Icon,
+  Heartbeat: Icon,
+  Stethoscope: Icon,
+  Hospital: Icon,
+  Prescription: Icon,
+  MicrophoneStage: Icon
 };
 
 export const {
@@ -63,5 +68,10 @@ export const {
   Eye,
   Settings,
   AlertCircle,
-  Home
+  Home,
+  Heartbeat,
+  Stethoscope,
+  Hospital,
+  Prescription,
+  MicrophoneStage
 } = icons;
