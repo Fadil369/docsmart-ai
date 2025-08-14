@@ -1,29 +1,17 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
+import { resolve } from 'path';
 import { defineConfig } from "vite";
-import { resolve } from 'path'
 
 const projectRoot = process.env.PROJECT_ROOT || import.meta.dirname
 
 // https://vite.dev/config/
 export default defineConfig({
+  // Base URL configuration for proper asset loading
+  base: './',
+  
   plugins: [
-    react({
-      // Enable React Fast Refresh
-      fastRefresh: true,
-      // SWC optimizations
-      jsc: {
-        parser: {
-          tsx: true,
-          decorators: true,
-        },
-        transform: {
-          react: {
-            runtime: "automatic",
-          },
-        },
-      },
-    }),
+    react(),
     tailwindcss(),
   ],
   resolve: {
@@ -190,9 +178,6 @@ export default defineConfig({
   // Worker configuration
   worker: {
     format: 'es',
-    plugins: [
-      react(),
-    ],
   },
   
   // Environment variables
@@ -208,16 +193,6 @@ export default defineConfig({
       scss: {
         additionalData: `@import "@/styles/variables.scss";`,
       },
-    },
-  },
-  
-  // Experimental features
-  experimental: {
-    renderBuiltUrl(filename: string) {
-      // Custom asset URL generation for CDN deployment
-      return process.env.NODE_ENV === 'production' 
-        ? `https://cdn.docsmart.ai/assets/${filename}`
-        : filename;
     },
   },
 });

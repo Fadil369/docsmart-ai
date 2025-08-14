@@ -1,4 +1,4 @@
-import { wrap, Remote } from 'comlink';
+import { Remote, wrap } from 'comlink';
 
 // Type definitions for worker communication
 interface WorkerApi {
