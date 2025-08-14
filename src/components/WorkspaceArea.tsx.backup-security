@@ -1,4 +1,3 @@
-import { validateFiles, DEFAULT_FILE_CONFIG } from "@/lib/file-validation"
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -172,29 +171,6 @@ export function WorkspaceArea({ onActionClick, activeActions, actionProgress, ai
     setDragActive(false)
 
     const files = Array.from(e.dataTransfer.files)
-    
-    // Security validation
-    const validation = validateFiles(files, DEFAULT_FILE_CONFIG)
-    
-    if (validation.globalErrors.length > 0) {
-      validation.globalErrors.forEach(error => toast.error(error))
-      return
-    }
-    
-    if (validation.invalidFiles.length > 0) {
-      validation.invalidFiles.forEach(({ file, errors }) => {
-        toast.error(`${file.name}: ${errors.join(", ")}`)
-      })
-    }
-    
-    if (validation.totalWarnings.length > 0) {
-      validation.totalWarnings.forEach(warning => toast.warning(warning))
-    }
-    
-    if (validation.validFiles.length === 0) {
-      toast.error("No valid files to upload")
-      return
-    }
     if (files.length > 0) {
       setSelectedFiles(files)
       onActionClick('upload', files)
