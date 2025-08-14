@@ -543,6 +543,146 @@ export class HealthcareAIService {
   private async checkPDPLCompliance(content: string): Promise<any> {
     return { compliant: true }
   }
+
+  /**
+   * Extract form data from patient information for auto-population
+   */
+  async extractFormData(
+    patientData: any,
+    medicalHistory: MedicalEntity[],
+    documentType: HealthcareDocumentType
+  ): Promise<Record<string, any>> {
+    const prompt = spark.llmPrompt`
+      Extract relevant form data for auto-population from patient information.
+      
+      Patient Data: ${JSON.stringify(patientData)}
+      Medical History: ${JSON.stringify(medicalHistory)}
+      Document Type: ${documentType}
+      
+      Return JSON object with field names and values for form auto-population.
+    `
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o')
+      return JSON.parse(result || '{}')
+    } catch (error) {
+      console.error('Form data extraction failed:', error)
+      return {}
+    }
+  }
+
+  /**
+   * Generate AI suggestions for form fields
+   */
+  async generateFormSuggestions(
+    patientData: any,
+    medicalHistory: MedicalEntity[],
+    documentType: HealthcareDocumentType,
+    language: 'ar' | 'en'
+  ): Promise<Record<string, string>> {
+    const prompt = spark.llmPrompt`
+      Generate intelligent suggestions for form fields based on patient data and medical history.
+      Provide suggestions in ${language} language.
+      
+      Patient Data: ${JSON.stringify(patientData)}
+      Medical History: ${JSON.stringify(medicalHistory)}
+      Document Type: ${documentType}
+      
+      Return JSON object with field names and suggestion values.
+    `
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o')
+      return JSON.parse(result || '{}')
+    } catch (error) {
+      console.error('Form suggestions generation failed:', error)
+      return {}
+    }
+  }
+
+  /**
+   * Check drug interactions for Saudi medication database
+   */
+  async checkDrugInteractions(
+    medications: MedicalEntity[],
+    patientData: any,
+    database: string = 'saudi_database'
+  ): Promise<any[]> {
+    const prompt = spark.llmPrompt`
+      Check for drug interactions between these medications using ${database}.
+      Consider patient data for personalized interaction checking.
+      
+      Medications: ${JSON.stringify(medications)}
+      Patient Data: ${JSON.stringify(patientData)}
+      
+      Return JSON array of interactions with severity, description, and recommendations.
+    `
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o')
+      return JSON.parse(result || '[]')
+    } catch (error) {
+      console.error('Drug interaction check failed:', error)
+      return []
+    }
+  }
+
+  /**
+   * Check compliance with Saudi healthcare guidelines
+   */
+  async checkSaudiGuidelines(
+    medicalEntities: MedicalEntity[],
+    documentType: HealthcareDocumentType,
+    patientData: any
+  ): Promise<any[]> {
+    const prompt = spark.llmPrompt`
+      Check compliance with Saudi healthcare guidelines (MOH, SFDA, NPHIES, CBAHI).
+      
+      Medical Entities: ${JSON.stringify(medicalEntities)}
+      Document Type: ${documentType}
+      Patient Data: ${JSON.stringify(patientData)}
+      
+      Return JSON array of guideline compliance checks with recommendations.
+    `
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o')
+      return JSON.parse(result || '[]')
+    } catch (error) {
+      console.error('Saudi guidelines check failed:', error)
+      return []
+    }
+  }
+
+  /**
+   * Generate clinical alerts based on analysis
+   */
+  async generateClinicalAlerts(
+    medicalEntities: MedicalEntity[],
+    patientData: any,
+    documentType?: HealthcareDocumentType,
+    language: 'ar' | 'en' = 'ar'
+  ): Promise<any[]> {
+    const prompt = spark.llmPrompt`
+      Generate clinical alerts and warnings based on medical analysis.
+      Consider patient safety and Saudi healthcare standards.
+      Provide alerts in ${language} language.
+      
+      Medical Entities: ${JSON.stringify(medicalEntities)}
+      Patient Data: ${JSON.stringify(patientData)}
+      Document Type: ${documentType}
+      
+      Return JSON array of clinical alerts with priority, type, and messages.
+    `
+
+    try {
+      const result = await spark.llm(prompt, 'gpt-4o')
+      return JSON.parse(result || '[]')
+    } catch (error) {
+      console.error('Clinical alerts generation failed:', error)
+      return []
+    }
+  }
 }
 
 // Export singleton instance
