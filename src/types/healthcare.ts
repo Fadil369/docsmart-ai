@@ -159,6 +159,18 @@ export interface Identifier {
   value?: string
 }
 
+export interface Identifier {
+  use?: string
+  type?: CodeableConcept
+  system?: string
+  value?: string
+  period?: {
+    start?: string
+    end?: string
+  }
+  assigner?: Reference
+}
+
 export interface CodeableConcept {
   coding?: Coding[]
   text?: string
@@ -216,6 +228,25 @@ export interface ClinicalDecision {
   evidence: string[]
   actionRequired: boolean
   guidelines: GuidelineReference[]
+  priority: 'low' | 'medium' | 'high' | 'critical'
+  title: string
+  arabicTitle: string
+  description: string
+  arabicDescription: string
+  confidence: number
+  arabicEvidence: string[]
+  actions: ClinicalAction[]
+  createdAt: Date
+  expiresAt?: Date
+}
+
+export interface ClinicalAction {
+  id: string
+  type: 'medication' | 'procedure' | 'referral' | 'followup' | 'test'
+  description: string
+  arabicDescription: string
+  required: boolean
+  dueDate?: Date
 }
 
 export interface GuidelineReference {
@@ -235,15 +266,13 @@ export interface VoiceCommand {
 
 export type VoiceIntent =
   | 'upload_document'
-  | 'view_patient_record'
+  | 'analyze_document'
+  | 'translate_document'
   | 'create_prescription'
   | 'schedule_appointment'
-  | 'translate_document'
-  | 'generate_report'
-  | 'share_document'
   | 'search_patient'
-  | 'add_notes'
-  | 'export_data'
+  | 'generate_report'
+  | 'voice_note'
 
 export interface VoiceEntity {
   type: string
