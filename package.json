@@ -76,7 +76,7 @@
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "jsdom": "^26.1.0",
-    "jspdf": "^3.0.1",
+    "jspdf": "^3.0.2",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.484.0",
@@ -140,7 +140,7 @@
     "terser": "^5.43.1",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.38.0",
-    "vite": "^6.3.5",
+    "vite": "^6.3.6",
     "worker-loader": "^3.0.8",
     "wrangler": "^4.29.1"
   },
